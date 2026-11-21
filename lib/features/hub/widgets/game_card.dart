@@ -2,51 +2,55 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:xweet_games/core/constants/game_colors.dart';
 import 'package:xweet_games/core/services/audio_service.dart';
+import 'package:xweet_games/features/wordle/screens/wordle_detail_screen.dart';
+import 'package:xweet_games/features/wordle/widgets/how_to_play_modal.dart';
 import 'package:xweet_games/models/game_model.dart';
 
 class GameCard extends StatelessWidget {
   final GameModel game;
-  final VoidCallback onTap;
 
   const GameCard({
     super.key,
     required this.game,
-    required this.onTap,
   });
+
+  void _navigateToWordle(BuildContext context) {
+    AudioService.instance.triggerSelectionHaptic();
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const WordleDetailScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: GameColors.surfaceWhite,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: GameColors.borderMuted,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: GameColors.carbon.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: GameColors.carbon.withValues(alpha: 0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: () {
-            AudioService.instance.triggerSelectionHaptic();
-            onTap();
-          },
+          borderRadius: BorderRadius.circular(28),
+          onTap: () => _navigateToWordle(context),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(22),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Tag & Category
+                // Top Tag Badges
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -58,7 +62,7 @@ class GameCard extends StatelessWidget {
                         border: Border.all(color: GameColors.carbon, width: 1),
                       ),
                       child: Text(
-                        game.badgeText,
+                        '5-ROUND SERIES',
                         style: GoogleFonts.spaceMono(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -67,94 +71,86 @@ class GameCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      game.statusText,
-                      style: GoogleFonts.spaceMono(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: GameColors.terrain,
-                      ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.bolt_rounded,
+                          size: 16,
+                          color: GameColors.carbon,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'FEATURED EXPEDITION',
+                          style: GoogleFonts.spaceMono(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: GameColors.carbon,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
                 // Title & Subtitle
                 Text(
-                  game.title,
+                  'Wordle',
                   style: GoogleFonts.spaceGrotesk(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: GameColors.carbon,
-                    letterSpacing: -0.5,
+                    letterSpacing: -0.6,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  game.tagline,
+                  '5-Round Series Lexical Tournament',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 14,
                     color: GameColors.terrain,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                // Tactile Wordle Tile Preview Grid
+                // Visual Wordle Letter Tiles (W O R D L)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    _buildPreviewTile('X', GameColors.signalLime, GameColors.carbon),
-                    _buildPreviewTile('W', GameColors.mist, GameColors.carbon),
-                    _buildPreviewTile('E', GameColors.carbon, Colors.white),
-                    _buildPreviewTile('E', GameColors.terrain, Colors.white),
-                    _buildPreviewTile('T', GameColors.signalLime, GameColors.carbon),
+                    _buildPreviewTile('W', GameColors.signalLime, GameColors.carbon),
+                    _buildPreviewTile('O', GameColors.mist, GameColors.carbon),
+                    _buildPreviewTile('R', GameColors.carbon, Colors.white),
+                    _buildPreviewTile('D', GameColors.terrain, Colors.white),
+                    _buildPreviewTile('L', GameColors.signalLime, GameColors.carbon),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                // Description
+                // Human-readable description
                 Text(
-                  game.description,
+                  'Solve 5 secret words in a row. You have 6 attempts per word with live color clues and instant audio feedback. Test your vocabulary and climb the ranks!',
                   style: GoogleFonts.spaceGrotesk(
                     fontSize: 13,
-                    color: GameColors.carbon.withValues(alpha: 0.8),
-                    height: 1.4,
+                    color: GameColors.carbon.withValues(alpha: 0.85),
+                    height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 22),
 
-                // Action Pill Button
+                // Action Buttons: Play Wordle & How to Play
                 Row(
                   children: [
+                    OutlinedButton(
+                      onPressed: () => HowToPlayModal.show(context),
+                      child: const Text('HOW TO PLAY'),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 13),
-                        decoration: BoxDecoration(
-                          color: GameColors.carbon,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: GameColors.carbon, width: 1.2),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'VIEW SPEC & RULES',
-                              style: GoogleFonts.spaceGrotesk(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: GameColors.paper,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.arrow_forward_rounded,
-                              size: 16,
-                              color: GameColors.signalLime,
-                            ),
-                          ],
-                        ),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _navigateToWordle(context),
+                        icon: const Icon(Icons.play_arrow_rounded, size: 22),
+                        label: const Text('PLAY WORDLE'),
                       ),
                     ),
                   ],
