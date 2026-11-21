@@ -1,42 +1,35 @@
 import 'package:flutter/material.dart';
 
+/// Editorial Design Tokens matching Xweet Wordle Specification
+/// Strict Tactile Editorial Light Mode (artisanal cartography & telemetry)
 class GameColors {
   GameColors._();
 
-  // Dark gaming background shades
-  static const Color background = Color(0xFF0A0C14);
-  static const Color surface = Color(0xFF131722);
-  static const Color surfaceLight = Color(0xFF1D2333);
-  static const Color surfaceBorder = Color(0xFF2B3347);
+  // Core Palette Tokens
+  static const Color carbon = Color(0xFF171815); // Primary typography, dark buttons, high-contrast borders
+  static const Color paper = Color(0xFFF0EFE6); // Default canvas background, card surfaces, modal background
+  static const Color signalLime = Color(0xFFD7F36A); // Primary CTA buttons, correct letter tiles, active indicators
+  static const Color terrain = Color(0xFF858779); // Secondary labels, borders, coordinate grids, absent keys
+  static const Color mist = Color(0xFFB7A7D9); // Present letter tiles (Misplaced), soft badges, subtle clues
 
-  // Vibrant neon game accents
-  static const Color primaryNeon = Color(0xFF00F0FF); // Cyber Cyan
-  static const Color secondaryNeon = Color(0xFFB026FF); // Electric Violet
-  static const Color accentAmber = Color(0xFFFFB800); // Radiant Gold
-  static const Color accentEmerald = Color(0xFF00FFA3); // Neon Green
-  static const Color accentRose = Color(0xFFFF2A6D); // Cyber Magenta
+  // Clean White Surface (for bottom bar and crisp cards)
+  static const Color surfaceWhite = Color(0xFFFFFFFF);
 
-  // Text colors
-  static const Color textPrimary = Color(0xFFF1F5F9);
-  static const Color textSecondary = Color(0xFF94A3B8);
-  static const Color textMuted = Color(0xFF64748B);
+  // Derived Semantic Surface & Alpha Accents
+  static Color get borderMuted => terrain.withValues(alpha: 0.25);
+  static Color get borderActive => carbon.withValues(alpha: 0.60);
+  static Color get keyDefaultBg => const Color(0xFFFFFFFF).withValues(alpha: 0.90);
+  static Color get keyAbsentBg => terrain.withValues(alpha: 0.25);
+  static Color get keyAbsentText => terrain.withValues(alpha: 0.60);
+  static Color get surfaceGlass => paper.withValues(alpha: 0.92);
 
-  // Gradient presets
-  static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF00F0FF), Color(0xFFB026FF)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  // Text Colors
+  static const Color textPrimary = carbon;
+  static const Color textSecondary = terrain;
+  static const Color textMuted = Color(0xFFA1A396);
 
-  static const LinearGradient cardGradient = LinearGradient(
-    colors: [Color(0xFF171B29), Color(0xFF10131E)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient goldGradient = LinearGradient(
-    colors: [Color(0xFFFFB800), Color(0xFFFF8A00)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  // Status & Utility Colors
+  static const Color success = signalLime;
+  static const Color warning = Color(0xFFE5A93C);
+  static const Color error = Color(0xFFE25555);
 }

@@ -5,90 +5,129 @@ import '../constants/game_colors.dart';
 class GameTheme {
   GameTheme._();
 
-  static ThemeData get darkTheme {
-    final textTheme = GoogleFonts.rajdhaniTextTheme(
-      ThemeData(brightness: Brightness.dark).textTheme,
+  static ThemeData get lightTheme {
+    final baseTextTheme = GoogleFonts.spaceGroteskTextTheme(
+      ThemeData(brightness: Brightness.light).textTheme,
     );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: GameColors.background,
-      colorScheme: const ColorScheme.dark(
-        primary: GameColors.primaryNeon,
-        secondary: GameColors.secondaryNeon,
-        surface: GameColors.surface,
-        error: GameColors.accentRose,
-        onPrimary: Colors.black,
-        onSecondary: Colors.white,
-        onSurface: GameColors.textPrimary,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: GameColors.paper,
+      colorScheme: const ColorScheme.light(
+        primary: GameColors.carbon,
+        secondary: GameColors.signalLime,
+        tertiary: GameColors.mist,
+        surface: GameColors.paper,
+        error: GameColors.error,
+        onPrimary: GameColors.paper,
+        onSecondary: GameColors.carbon,
+        onSurface: GameColors.carbon,
       ),
-      textTheme: textTheme.copyWith(
-        displayLarge: GoogleFonts.orbitron(
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: GoogleFonts.spaceGrotesk(
           fontSize: 32,
           fontWeight: FontWeight.bold,
-          color: GameColors.textPrimary,
-          letterSpacing: 1.5,
+          color: GameColors.carbon,
+          letterSpacing: -0.5,
         ),
-        displayMedium: GoogleFonts.orbitron(
+        displayMedium: GoogleFonts.spaceGrotesk(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: GameColors.textPrimary,
-          letterSpacing: 1.2,
+          color: GameColors.carbon,
+          letterSpacing: -0.3,
         ),
-        titleLarge: GoogleFonts.rajdhani(
+        titleLarge: GoogleFonts.spaceGrotesk(
           fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: GameColors.textPrimary,
+          fontWeight: FontWeight.w700,
+          color: GameColors.carbon,
         ),
-        titleMedium: GoogleFonts.rajdhani(
+        titleMedium: GoogleFonts.spaceGrotesk(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: GameColors.textSecondary,
+          color: GameColors.carbon,
         ),
-        bodyLarge: GoogleFonts.rajdhani(
-          fontSize: 16,
-          color: GameColors.textPrimary,
+        bodyLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 15,
+          color: GameColors.carbon,
         ),
-        bodyMedium: GoogleFonts.rajdhani(
+        bodyMedium: GoogleFonts.spaceGrotesk(
+          fontSize: 13,
+          color: GameColors.terrain,
+        ),
+        labelLarge: GoogleFonts.spaceGrotesk(
           fontSize: 14,
-          color: GameColors.textSecondary,
+          fontWeight: FontWeight.w700,
+          color: GameColors.carbon,
+        ),
+        labelSmall: GoogleFonts.spaceMono(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: GameColors.terrain,
+          letterSpacing: 0.5,
         ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: GameColors.paper,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.orbitron(
+        titleTextStyle: GoogleFonts.spaceGrotesk(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: GameColors.textPrimary,
-          letterSpacing: 1.2,
+          color: GameColors.carbon,
         ),
-        iconTheme: const IconThemeData(color: GameColors.textPrimary),
+        iconTheme: const IconThemeData(color: GameColors.carbon),
       ),
       cardTheme: CardThemeData(
-        color: GameColors.surface,
-        elevation: 4,
+        color: GameColors.surfaceWhite,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: GameColors.surfaceBorder, width: 1),
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: GameColors.borderMuted, width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: GameColors.primaryNeon,
-          foregroundColor: Colors.black,
-          textStyle: GoogleFonts.orbitron(
+          backgroundColor: GameColors.signalLime,
+          foregroundColor: GameColors.carbon,
+          elevation: 0,
+          textStyle: GoogleFonts.spaceGrotesk(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.0,
+            letterSpacing: 0.2,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(50), // Fully rounded pill shape
+            side: const BorderSide(color: GameColors.carbon, width: 1.2),
           ),
         ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: GameColors.carbon,
+          side: const BorderSide(color: GameColors.carbon, width: 1.2),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50),
+          ),
+          textStyle: GoogleFonts.spaceGrotesk(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: GameColors.surfaceWhite,
+        selectedItemColor: GameColors.carbon,
+        unselectedItemColor: GameColors.terrain,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+      ),
+      dividerTheme: DividerThemeData(
+        color: GameColors.borderMuted,
+        thickness: 1,
       ),
     );
   }

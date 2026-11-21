@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 enum GameCategory {
-  all('All Games'),
-  arcade('Arcade'),
-  reflex('Reflex & Speed'),
-  puzzle('Puzzle'),
-  action('Action');
+  all('All Expeditions'),
+  lexical('Lexical & Word'),
+  puzzle('Puzzle & Logic'),
+  arcade('Tactile Arcade');
 
   final String label;
   const GameCategory(this.label);
@@ -19,7 +18,9 @@ class GameModel {
   final GameCategory category;
   final IconData icon;
   final Color accentColor;
-  final Widget Function(BuildContext) builder;
+  final String badgeText;
+  final String statusText;
+  final WidgetBuilder? builder;
   final bool isPlayable;
 
   const GameModel({
@@ -30,7 +31,9 @@ class GameModel {
     required this.category,
     required this.icon,
     required this.accentColor,
-    required this.builder,
-    this.isPlayable = true,
+    required this.badgeText,
+    required this.statusText,
+    this.builder,
+    this.isPlayable = false,
   });
 }

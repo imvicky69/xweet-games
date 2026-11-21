@@ -11,13 +11,13 @@ void main() {
     await StorageService.instance.init();
   });
 
-  testWidgets('XweetGamesApp launches GameHubScreen smoke test', (WidgetTester tester) async {
+  testWidgets('XweetGamesApp launches GameHubScreen with Wordle listing test', (WidgetTester tester) async {
     await tester.pumpWidget(const XweetGamesApp());
     await tester.pumpAndSettle();
 
-    // Verify GameHub is rendered with games
+    // Verify GameHub is rendered with Wordle expedition
     expect(find.byType(GameHubScreen), findsOneWidget);
-    expect(find.byType(GameCard), findsWidgets);
-    expect(find.text('Cyber Reflex'), findsWidgets);
+    expect(find.byType(GameCard), findsOneWidget);
+    expect(find.text('Wordle'), findsWidgets);
   });
 }

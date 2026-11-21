@@ -28,31 +28,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: GameColors.surface,
+          backgroundColor: GameColors.surfaceWhite,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: GameColors.accentRose),
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: GameColors.error, width: 1.2),
           ),
           title: Text(
-            'Reset High Scores?',
-            style: GoogleFonts.orbitron(
+            'Reset Series Records?',
+            style: GoogleFonts.spaceGrotesk(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: GameColors.accentRose,
+              color: GameColors.carbon,
             ),
           ),
-          content: const Text(
-            'This will clear all your saved game records. This action cannot be undone.',
+          content: Text(
+            'This will clear all your saved series ratings and round audit history. This action cannot be undone.',
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 14,
+              color: GameColors.terrain,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.spaceGrotesk(
+                  fontWeight: FontWeight.bold,
+                  color: GameColors.terrain,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: GameColors.accentRose,
+                backgroundColor: GameColors.error,
                 foregroundColor: Colors.white,
               ),
               child: const Text('Reset All'),
@@ -67,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AudioService.instance.triggerHeavyHaptic();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All high scores have been reset')),
+        const SnackBar(content: Text('All series scores and audit history reset')),
       );
     }
   }
@@ -75,34 +85,100 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: GameColors.paper,
       appBar: AppBar(
-        title: const Text('SETTINGS'),
+        title: Text(
+          'SETTINGS & TELEMETRY',
+          style: GoogleFonts.spaceMono(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: GameColors.carbon,
+            letterSpacing: 1.0,
+          ),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text(
-            'PREFERENCES',
-            style: GoogleFonts.orbitron(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: GameColors.primaryNeon,
-              letterSpacing: 1.5,
+          // Logo and App Branding Card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: GameColors.surfaceWhite,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: GameColors.borderMuted),
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/images/xweet_logo.png',
+                  height: 52,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Xweet Games',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: GameColors.carbon,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Tactile Editorial Light Edition',
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 12,
+                          color: GameColors.terrain,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
+
+          const SizedBox(height: 24),
+
+          Text(
+            'FEEDBACK & AUDIO',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: GameColors.terrain,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 8),
+
           Container(
             decoration: BoxDecoration(
-              color: GameColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: GameColors.surfaceBorder),
+              color: GameColors.surfaceWhite,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: GameColors.borderMuted),
             ),
             child: Column(
               children: [
                 SwitchListTile(
-                  title: const Text('Sound Effects'),
-                  subtitle: const Text('In-game sound effects & audio cues'),
-                  secondary: const Icon(Icons.volume_up_rounded, color: GameColors.primaryNeon),
+                  activeTrackColor: GameColors.signalLime,
+                  activeThumbColor: GameColors.carbon,
+                  title: Text(
+                    'Sound Triggers',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w600,
+                      color: GameColors.carbon,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'correct.mp3, boom.mp3, close.mp3 audio triggers',
+                    style: GoogleFonts.spaceGrotesk(fontSize: 12, color: GameColors.terrain),
+                  ),
+                  secondary: const Icon(Icons.volume_up_outlined, color: GameColors.carbon),
                   value: _soundEnabled,
                   onChanged: (val) async {
                     setState(() => _soundEnabled = val);
@@ -110,11 +186,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     AudioService.instance.triggerHaptic();
                   },
                 ),
-                const Divider(height: 1, color: GameColors.surfaceBorder),
+                Divider(height: 1, color: GameColors.borderMuted),
                 SwitchListTile(
-                  title: const Text('Haptic Feedback'),
-                  subtitle: const Text('Vibrations on taps, hits & achievements'),
-                  secondary: const Icon(Icons.vibration_rounded, color: GameColors.secondaryNeon),
+                  activeTrackColor: GameColors.signalLime,
+                  activeThumbColor: GameColors.carbon,
+                  title: Text(
+                    'Haptic Feedback',
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w600,
+                      color: GameColors.carbon,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Tactile vibrations on keypresses and letter reveals',
+                    style: GoogleFonts.spaceGrotesk(fontSize: 12, color: GameColors.terrain),
+                  ),
+                  secondary: const Icon(Icons.vibration_rounded, color: GameColors.carbon),
                   value: _hapticsEnabled,
                   onChanged: (val) async {
                     setState(() => _hapticsEnabled = val);
@@ -125,103 +212,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 28),
+
+          const SizedBox(height: 24),
+
           Text(
-            'DATA & STORAGE',
-            style: GoogleFonts.orbitron(
-              fontSize: 13,
+            'DATA & AUDIT',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: GameColors.primaryNeon,
-              letterSpacing: 1.5,
+              color: GameColors.terrain,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+
           Container(
             decoration: BoxDecoration(
-              color: GameColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: GameColors.surfaceBorder),
+              color: GameColors.surfaceWhite,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: GameColors.borderMuted),
             ),
             child: ListTile(
-              leading: const Icon(Icons.delete_outline_rounded, color: GameColors.accentRose),
-              title: const Text('Reset All High Scores'),
-              subtitle: const Text('Erase all saved scores and records'),
-              trailing: const Icon(Icons.chevron_right_rounded, color: GameColors.textMuted),
+              leading: const Icon(Icons.delete_outline_rounded, color: GameColors.error),
+              title: Text(
+                'Reset Series History',
+                style: GoogleFonts.spaceGrotesk(
+                  fontWeight: FontWeight.w600,
+                  color: GameColors.error,
+                ),
+              ),
+              subtitle: Text(
+                'Erase all recorded series audits and statistics',
+                style: GoogleFonts.spaceGrotesk(fontSize: 12, color: GameColors.terrain),
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded, color: GameColors.terrain),
               onTap: _resetScores,
             ),
           ),
-          const SizedBox(height: 28),
+
+          const SizedBox(height: 24),
+
           Text(
-            'ABOUT APP',
-            style: GoogleFonts.orbitron(
-              fontSize: 13,
+            'TELEMETRY & BUILD INFO',
+            style: GoogleFonts.spaceMono(
+              fontSize: 11,
               fontWeight: FontWeight.bold,
-              color: GameColors.primaryNeon,
-              letterSpacing: 1.5,
+              color: GameColors.terrain,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: GameColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: GameColors.surfaceBorder),
+              color: GameColors.surfaceWhite,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: GameColors.borderMuted),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('App Name', style: TextStyle(color: GameColors.textSecondary)),
-                    Text(
-                      AppConstants.appName,
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: GameColors.textPrimary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Package ID', style: TextStyle(color: GameColors.textSecondary)),
-                    Text(
-                      AppConstants.packageName,
-                      style: GoogleFonts.rajdhani(
-                        fontWeight: FontWeight.bold,
-                        color: GameColors.primaryNeon,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Version', style: TextStyle(color: GameColors.textSecondary)),
-                    Text(
-                      AppConstants.appVersion,
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: GameColors.textPrimary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Platform', style: TextStyle(color: GameColors.textSecondary)),
-                    Text(
-                      'Android Only',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: GameColors.accentEmerald),
-                    ),
-                  ],
-                ),
+                _buildInfoRow('App Name', AppConstants.appName),
+                const SizedBox(height: 10),
+                _buildInfoRow('Global Package ID', AppConstants.packageName),
+                const SizedBox(height: 10),
+                _buildInfoRow('Design System', 'Tactile Editorial (Light)'),
+                const SizedBox(height: 10),
+                _buildInfoRow('Platform', 'Android Native'),
+                const SizedBox(height: 10),
+                _buildInfoRow('Version', AppConstants.appVersion),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 13,
+            color: GameColors.terrain,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.spaceMono(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: GameColors.carbon,
+          ),
+        ),
+      ],
     );
   }
 }

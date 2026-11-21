@@ -6,31 +6,29 @@ import 'package:xweet_games/models/game_model.dart';
 
 class GameCard extends StatelessWidget {
   final GameModel game;
-  final int highScore;
-  final VoidCallback onPlay;
+  final VoidCallback onTap;
 
   const GameCard({
     super.key,
     required this.game,
-    required this.highScore,
-    required this.onPlay,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: GameColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        color: GameColors.surfaceWhite,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: game.accentColor.withValues(alpha: 0.35),
-          width: 1.5,
+          color: GameColors.borderMuted,
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: game.accentColor.withValues(alpha: 0.12),
-            blurRadius: 14,
+            color: GameColors.carbon.withValues(alpha: 0.04),
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -38,132 +36,157 @@ class GameCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(24),
           onTap: () {
             AudioService.instance.triggerSelectionHaptic();
-            onPlay();
+            onTap();
           },
           child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Icon Avatar
-                Container(
-                  width: 58,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    color: game.accentColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: game.accentColor.withValues(alpha: 0.5),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(
-                    game.icon,
-                    size: 30,
-                    color: game.accentColor,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Game Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              game.title,
-                              style: GoogleFonts.orbitron(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: GameColors.textPrimary,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: game.accentColor.withValues(alpha: 0.18),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              game.category.label,
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: game.accentColor,
-                              ),
-                            ),
-                          ),
-                        ],
+                // Top Tag & Category
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: GameColors.signalLime,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: GameColors.carbon, width: 1),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        game.tagline,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: GameColors.textSecondary,
+                      child: Text(
+                        game.badgeText,
+                        style: GoogleFonts.spaceMono(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: GameColors.carbon,
+                          letterSpacing: 0.5,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.emoji_events,
-                            size: 14,
-                            color: GameColors.accentAmber,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'High Score: $highScore',
-                            style: GoogleFonts.rajdhani(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: GameColors.accentAmber,
-                            ),
-                          ),
-                        ],
+                    ),
+                    Text(
+                      game.statusText,
+                      style: GoogleFonts.spaceMono(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: GameColors.terrain,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Title & Subtitle
+                Text(
+                  game.title,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: GameColors.carbon,
+                    letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(width: 12),
-                // Play Button
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        game.accentColor,
-                        game.accentColor.withValues(alpha: 0.7),
-                      ],
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: game.accentColor.withValues(alpha: 0.4),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
+                const SizedBox(height: 4),
+                Text(
+                  game.tagline,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 14,
+                    color: GameColors.terrain,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Tactile Wordle Tile Preview Grid
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildPreviewTile('X', GameColors.signalLime, GameColors.carbon),
+                    _buildPreviewTile('W', GameColors.mist, GameColors.carbon),
+                    _buildPreviewTile('E', GameColors.carbon, Colors.white),
+                    _buildPreviewTile('E', GameColors.terrain, Colors.white),
+                    _buildPreviewTile('T', GameColors.signalLime, GameColors.carbon),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Description
+                Text(
+                  game.description,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 13,
+                    color: GameColors.carbon.withValues(alpha: 0.8),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Action Pill Button
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        decoration: BoxDecoration(
+                          color: GameColors.carbon,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: GameColors.carbon, width: 1.2),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'VIEW SPEC & RULES',
+                              style: GoogleFonts.spaceGrotesk(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: GameColors.paper,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 16,
+                              color: GameColors.signalLime,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow_rounded,
-                    color: Colors.black,
-                    size: 28,
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewTile(String letter, Color bg, Color textColor) {
+    return Container(
+      width: 44,
+      height: 44,
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: GameColors.carbon.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          letter,
+          style: GoogleFonts.spaceMono(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textColor,
           ),
         ),
       ),

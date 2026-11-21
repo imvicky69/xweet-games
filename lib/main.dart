@@ -8,8 +8,18 @@ import 'features/hub/screens/game_hub_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize persistent game storage & sound preferences
+  // Initialize persistent game storage & preferences
   await StorageService.instance.init();
+
+  // Set system UI styling with light status bar and clean white bottom bar
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
 
   // Force portrait orientation for optimal mobile gaming experience
   await SystemChrome.setPreferredOrientations([
@@ -28,7 +38,7 @@ class XweetGamesApp extends StatelessWidget {
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: GameTheme.darkTheme,
+      theme: GameTheme.lightTheme,
       home: const GameHubScreen(),
     );
   }
