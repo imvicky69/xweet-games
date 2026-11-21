@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xweet_games/core/services/storage_service.dart';
@@ -40,6 +41,18 @@ void main() {
     expect(find.text('Wordle Expedition'), findsOneWidget);
     expect(find.text('Daily Wordle'), findsOneWidget);
     expect(find.text('Endless Streak Run'), findsOneWidget);
+    expect(find.text('Select Difficulty'), findsOneWidget);
+    expect(find.text('Dictionary Word Check'), findsOneWidget);
+
+    // Verify difficulty selection works
+    final easyDiff = find.text('Easy / Casual');
+    await tester.scrollUntilVisible(easyDiff, 200);
+    await tester.pumpAndSettle();
+    await tester.tap(easyDiff);
+    await tester.pumpAndSettle();
+
+    // Verify dictionary toggle switch is present
+    expect(find.byType(Switch), findsOneWidget);
 
     final startEndlessBtn = find.text('START ENDLESS RUN');
     await tester.scrollUntilVisible(startEndlessBtn, 200);
@@ -69,6 +82,31 @@ void main() {
     expect(find.text('P'), findsWidgets);
     expect(find.text('L'), findsWidgets);
     expect(find.text('A'), findsWidgets);
+  });
+
+  testWidgets('WordlePlaygroundScreen allows any random word when strictDictionary is false', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: WordlePlaygroundScreen(strictDictionary: false),
+    ));
+    await tester.pumpAndSettle();
+
+    final zKey = find.descendant(of: find.byType(WordleKeyboard), matching: find.text('Z'));
+    final enterKey = find.descendant(of: find.byType(WordleKeyboard), matching: find.text('ENTER'));
+
+    // Type a non-dictionary random combination 'Z', 'Z', 'Z', 'Z', 'Z'
+    for (int i = 0; i < 5; i++) {
+      await tester.tap(zKey);
+      await tester.pump();
+    }
+
+    // Tap ENTER
+    await tester.tap(enterKey);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1000));
+    await tester.pumpAndSettle();
+
+    // Should NOT show 'Not in word list' error
+    expect(find.text('Not in word list'), findsNothing);
   });
 
   testWidgets('XweetGamesApp navigates to Word Ladder Lobby and launches game', (WidgetTester tester) async {

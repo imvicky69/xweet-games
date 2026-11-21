@@ -20,11 +20,13 @@ import '../widgets/wordle_keyboard.dart';
 class WordlePlaygroundScreen extends StatefulWidget {
   final WordleDifficulty difficulty;
   final bool isDaily;
+  final bool strictDictionary;
 
   const WordlePlaygroundScreen({
     super.key,
     this.difficulty = WordleDifficulty.progressive,
     this.isDaily = false,
+    this.strictDictionary = true,
   });
 
   @override
@@ -157,7 +159,7 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
       return;
     }
 
-    if (!WordRepository.instance.isValidGuess(_currentInput)) {
+    if (widget.strictDictionary && !WordRepository.instance.isValidGuess(_currentInput)) {
       _triggerShake('Not in word list');
       return;
     }

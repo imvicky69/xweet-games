@@ -17,12 +17,14 @@ class WordleDetailScreen extends StatefulWidget {
 
 class _WordleDetailScreenState extends State<WordleDetailScreen> {
   late WordleDifficulty _selectedDifficulty;
+  late bool _strictDictionary;
   late List<RoundRecord> _lastRecords;
 
   @override
   void initState() {
     super.initState();
     _selectedDifficulty = WordleDifficulty.fromId(StorageService.instance.wordleDifficulty);
+    _strictDictionary = StorageService.instance.wordleStrictDictionary;
     _lastRecords = StorageService.instance.getLastSeriesRecords();
   }
 
@@ -32,6 +34,14 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
       _selectedDifficulty = difficulty;
     });
     StorageService.instance.setWordleDifficulty(difficulty.id);
+  }
+
+  void _onToggleStrictDictionary(bool value) {
+    AudioService.instance.triggerSelectionHaptic();
+    setState(() {
+      _strictDictionary = value;
+    });
+    StorageService.instance.setWordleStrictDictionary(value);
   }
 
   String _formatDate(DateTime date) {
@@ -48,7 +58,10 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => const WordlePlaygroundScreen(isDaily: true),
+        builder: (_) => WordlePlaygroundScreen(
+          isDaily: true,
+          strictDictionary: _strictDictionary,
+        ),
       ),
     ).then((_) {
       if (mounted) {
@@ -68,6 +81,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
         builder: (_) => WordlePlaygroundScreen(
           isDaily: false,
           difficulty: _selectedDifficulty,
+          strictDictionary: _strictDictionary,
         ),
       ),
     ).then((_) {
@@ -391,10 +405,15 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Difficulty Selection
+                  // Enhanced Difficulty Selection Cards
                   _buildDifficultySelection(),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
+
+                  // Dictionary Toggle Check
+                  _buildDictionaryToggle(),
+
+                  const SizedBox(height: 18),
 
                   SizedBox(
                     width: double.infinity,
@@ -481,46 +500,223 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Difficulty Setting',
-          style: GoogleFonts.outfit(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: GameColors.carbon,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Select Difficulty',
+              style: GoogleFonts.outfit(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: GameColors.carbon,
+              ),
+            ),
+            Text(
+              _selectedDifficulty.poolSize,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: GameColors.terrain,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: WordleDifficulty.values.map((diff) {
-            final isSelected = _selectedDifficulty == diff;
-            return InkWell(
-              borderRadius: BorderRadius.circular(50),
-              onTap: () => _onDifficultySelected(diff),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: isSelected ? GameColors.signalLime : GameColors.paper,
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(
-                    color: isSelected ? GameColors.carbon : GameColors.borderMuted,
-                    width: isSelected ? 1.4 : 1.0,
-                  ),
-                ),
-                child: Text(
-                  diff.title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                    color: GameColors.carbon,
+        const SizedBox(height: 10),
+        ...WordleDifficulty.values.map((diff) {
+          final isSelected = _selectedDifficulty == diff;
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.white : GameColors.paper,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSelected ? GameColors.carbon : GameColors.borderMuted,
+                width: isSelected ? 1.6 : 1.0,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: GameColors.signalLime.withValues(alpha: 0.35),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => _onDifficultySelected(diff),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  child: Row(
+                    children: [
+                      // Radio dot indicator
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected ? GameColors.carbon : GameColors.terrain,
+                            width: 1.8,
+                          ),
+                          color: isSelected ? GameColors.signalLime : Colors.transparent,
+                        ),
+                        child: isSelected
+                            ? Center(
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: GameColors.carbon,
+                                  ),
+                                ),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Title & Badge
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  diff.title,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 14,
+                                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+                                    color: GameColors.carbon,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? GameColors.signalLime : GameColors.surfaceWhite,
+                                    borderRadius: BorderRadius.circular(50),
+                                    border: Border.all(
+                                      color: isSelected ? GameColors.carbon : GameColors.borderMuted,
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    diff.badge,
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: GameColors.carbon,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              diff.description,
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                color: GameColors.terrain,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        }),
       ],
+    );
+  }
+
+  Widget _buildDictionaryToggle() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: GameColors.paper,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: GameColors.borderMuted),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: _strictDictionary ? GameColors.surfaceWhite : GameColors.signalLime,
+              shape: BoxShape.circle,
+              border: Border.all(color: GameColors.carbon, width: 1),
+            ),
+            child: Icon(
+              _strictDictionary ? Icons.spellcheck_rounded : Icons.casino_outlined,
+              size: 18,
+              color: GameColors.carbon,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Dictionary Word Check',
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: GameColors.carbon,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: _strictDictionary ? GameColors.surfaceWhite : GameColors.signalLime,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: GameColors.carbon, width: 0.8),
+                      ),
+                      child: Text(
+                        _strictDictionary ? 'STRICT' : 'RANDOM WORDS ON',
+                        style: GoogleFonts.outfit(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: GameColors.carbon,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _strictDictionary
+                      ? 'Guesses must exist in the 5-letter dictionary.'
+                      : 'Free Mode: Enter any random 5 letters (e.g. AAAAA, QWERT).',
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    color: GameColors.terrain,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch.adaptive(
+            value: _strictDictionary,
+            onChanged: _onToggleStrictDictionary,
+            activeThumbColor: GameColors.carbon,
+            activeTrackColor: GameColors.signalLime,
+          ),
+        ],
+      ),
     );
   }
 
@@ -673,7 +869,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                           style: GoogleFonts.outfit(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            color: r.isWon ? GameColors.carbon : GameColors.terrain,
+                            color: GameColors.carbon,
                           ),
                         ),
                       ),

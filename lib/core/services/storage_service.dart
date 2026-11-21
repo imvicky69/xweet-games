@@ -41,6 +41,12 @@ class StorageService {
     await _prefs.setString('wordle_difficulty', diff);
   }
 
+  // Wordle Dictionary Check (Allow Any 5-Letter Word if false)
+  bool get wordleStrictDictionary => _prefs.getBool('wordle_strict_dictionary') ?? true;
+  Future<void> setWordleStrictDictionary(bool value) async {
+    await _prefs.setBool('wordle_strict_dictionary', value);
+  }
+
   // Wordle Career Statistics
   int get seriesPlayed => _prefs.getInt('wordle_series_played') ?? 0;
   int get seriesWon => _prefs.getInt('wordle_series_won') ?? 0;
