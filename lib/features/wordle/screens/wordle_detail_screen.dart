@@ -6,6 +6,7 @@ import 'package:xweet_games/core/services/storage_service.dart';
 import '../models/round_record.dart';
 import '../models/wordle_difficulty.dart';
 import '../widgets/how_to_play_modal.dart';
+import 'wordle_playground_screen.dart';
 
 class WordleDetailScreen extends StatefulWidget {
   const WordleDetailScreen({super.key});
@@ -37,81 +38,18 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
     AudioService.instance.triggerHeavyHaptic();
     AudioService.instance.playTapSound();
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: GameColors.surfaceWhite,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-            side: const BorderSide(color: GameColors.carbon, width: 1.4),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: GameColors.signalLime,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.sports_esports_rounded,
-                  color: GameColors.carbon,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Ready to Play!',
-                style: GoogleFonts.outfit(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: GameColors.carbon,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Selected Mode',
-                style: GoogleFonts.outfit(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: GameColors.terrain,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${_selectedDifficulty.title} (${_selectedDifficulty.poolSize})',
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: GameColors.carbon,
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'You will play 5 consecutive rounds. Each round has a secret 5-letter word and 6 attempts.',
-                style: GoogleFonts.outfit(
-                  fontSize: 14,
-                  color: GameColors.carbon.withValues(alpha: 0.85),
-                  height: 1.4,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('LET’S GO!'),
-            ),
-          ],
-        );
-      },
-    );
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => WordlePlaygroundScreen(difficulty: _selectedDifficulty),
+      ),
+    ).then((_) {
+      // Refresh stats & records when returning from playground
+      if (mounted) {
+        setState(() {
+          _lastRecords = StorageService.instance.getLastSeriesRecords();
+        });
+      }
+    });
   }
 
   @override
