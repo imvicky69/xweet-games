@@ -222,6 +222,8 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                   }
                 },
               ),
+              centerTitle: false,
+              titleSpacing: 0,
               title: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -260,7 +262,6 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                   ),
                 ],
               ),
-              centerTitle: true,
               actions: [
                 // Undo Button
                 IconButton(

@@ -132,6 +132,48 @@ class LadderRulesModal extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // Color Guide
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: GameColors.paper,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: GameColors.borderMuted),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Color Guide (Shift Tracker)',
+                      style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: GameColors.carbon,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildColorLegend(
+                      color: GameColors.mist,
+                      title: 'Purple / Lavender (Shifted Letter)',
+                      desc: 'Highlights the single letter you changed from the previous word.',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildColorLegend(
+                      color: GameColors.surfaceWhite,
+                      title: 'White (Unchanged Letters)',
+                      desc: 'Letters kept the same as the previous step.',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildColorLegend(
+                      color: GameColors.signalLime,
+                      title: 'Signal Lime (Goal Reached)',
+                      desc: 'The target word turns lime when you successfully complete the ladder!',
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 24),
 
               ElevatedButton(
@@ -214,6 +256,51 @@ class LadderRulesModal extends StatelessWidget {
           style: GoogleFonts.outfit(
             fontSize: 12,
             color: GameColors.terrain,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildColorLegend({
+    required Color color,
+    required String title,
+    required String desc,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 22,
+          height: 22,
+          margin: const EdgeInsets.only(top: 2),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: GameColors.carbon, width: 1),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.outfit(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: GameColors.carbon,
+                ),
+              ),
+              Text(
+                desc,
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  color: GameColors.terrain,
+                ),
+              ),
+            ],
           ),
         ),
       ],
