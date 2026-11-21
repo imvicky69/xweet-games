@@ -28,8 +28,8 @@ void main() {
 
     // Verify navigation to WordleDetailScreen
     expect(find.byType(WordleDetailScreen), findsOneWidget);
-    expect(find.text('Wordle Expedition'), findsOneWidget);
-    expect(find.text('LAST SERIES AUDIT LOG'), findsOneWidget);
-    expect(find.text('HOW TO PLAY'), findsOneWidget);
+    expect(find.text('Wordle Tournament'), findsOneWidget);
+    expect(find.text('Choose Difficulty'), findsOneWidget);
+    expect(find.text('START 5-ROUND GAME'), findsOneWidget);
   });
 }

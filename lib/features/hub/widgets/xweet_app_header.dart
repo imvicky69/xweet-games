@@ -23,7 +23,7 @@ class XweetAppHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Xweet Logo (clean transparent PNG)
+          // Xweet Logo
           Hero(
             tag: 'xweet_brand_logo',
             child: Image.asset(
@@ -49,36 +49,36 @@ class XweetAppHeader extends StatelessWidget {
                   children: [
                     Text(
                       'XWEET',
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
+                      style: GoogleFonts.outfit(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
                         color: GameColors.carbon,
-                        letterSpacing: 1.2,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                       decoration: BoxDecoration(
                         color: GameColors.signalLime,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: GameColors.carbon, width: 0.8),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: GameColors.carbon, width: 1),
                       ),
                       child: Text(
                         'GAMES',
-                        style: GoogleFonts.spaceMono(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
+                        style: GoogleFonts.outfit(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
                           color: GameColors.carbon,
-                          letterSpacing: 0.8,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
                   ],
                 ),
                 Text(
-                  'Tactile Gaming Platform',
-                  style: GoogleFonts.spaceGrotesk(
+                  'Modern Mobile Gaming Hub',
+                  style: GoogleFonts.outfit(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                     color: GameColors.terrain,

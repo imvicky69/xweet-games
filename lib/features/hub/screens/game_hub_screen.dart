@@ -41,7 +41,7 @@ class GameHubScreen extends StatelessWidget {
             // Editorial Header with Xweet Logo & Settings
             XweetAppHeader(onSettingsTap: () => _openSettings(context)),
 
-            // Main Content Area (No bottom nav, no debug design token card)
+            // Main Content Area
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
@@ -69,12 +69,12 @@ class GameHubScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'EXPEDITIONS AVAILABLE',
-                              style: GoogleFonts.spaceMono(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                              'GAMES AVAILABLE',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
                                 color: GameColors.carbon,
-                                letterSpacing: 0.5,
+                                letterSpacing: 0.3,
                               ),
                             ),
                           ],
@@ -86,19 +86,20 @@ class GameHubScreen extends StatelessWidget {
 
                   Text(
                     'Choose Your Game',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.outfit(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
                       color: GameColors.carbon,
                       letterSpacing: -0.4,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Select an expedition below to customize your difficulty and begin.',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontSize: 13,
+                    'Select a game below to configure difficulty and start playing.',
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
                       color: GameColors.terrain,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 18),

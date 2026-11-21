@@ -6,7 +6,7 @@ class GameTheme {
   GameTheme._();
 
   static ThemeData get lightTheme {
-    final baseTextTheme = GoogleFonts.spaceGroteskTextTheme(
+    final baseTextTheme = GoogleFonts.outfitTextTheme(
       ThemeData(brightness: Brightness.light).textTheme,
     );
 
@@ -25,46 +25,48 @@ class GameTheme {
         onSurface: GameColors.carbon,
       ),
       textTheme: baseTextTheme.copyWith(
-        displayLarge: GoogleFonts.spaceGrotesk(
+        displayLarge: GoogleFonts.outfit(
           fontSize: 32,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: GameColors.carbon,
           letterSpacing: -0.5,
         ),
-        displayMedium: GoogleFonts.spaceGrotesk(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+        displayMedium: GoogleFonts.outfit(
+          fontSize: 26,
+          fontWeight: FontWeight.w800,
           color: GameColors.carbon,
           letterSpacing: -0.3,
         ),
-        titleLarge: GoogleFonts.spaceGrotesk(
+        titleLarge: GoogleFonts.outfit(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: GameColors.carbon,
         ),
-        titleMedium: GoogleFonts.spaceGrotesk(
+        titleMedium: GoogleFonts.outfit(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: GameColors.carbon,
         ),
-        bodyLarge: GoogleFonts.spaceGrotesk(
+        bodyLarge: GoogleFonts.outfit(
           fontSize: 15,
+          fontWeight: FontWeight.w500,
           color: GameColors.carbon,
         ),
-        bodyMedium: GoogleFonts.spaceGrotesk(
+        bodyMedium: GoogleFonts.outfit(
           fontSize: 13,
+          fontWeight: FontWeight.w400,
           color: GameColors.terrain,
         ),
-        labelLarge: GoogleFonts.spaceGrotesk(
+        labelLarge: GoogleFonts.outfit(
           fontSize: 14,
           fontWeight: FontWeight.w700,
           color: GameColors.carbon,
         ),
-        labelSmall: GoogleFonts.spaceMono(
+        labelSmall: GoogleFonts.outfit(
           fontSize: 11,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: GameColors.terrain,
-          letterSpacing: 0.5,
+          letterSpacing: 0.2,
         ),
       ),
       appBarTheme: AppBarTheme(
@@ -72,9 +74,9 @@ class GameTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.spaceGrotesk(
+        titleTextStyle: GoogleFonts.outfit(
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: GameColors.carbon,
         ),
         iconTheme: const IconThemeData(color: GameColors.carbon),
@@ -92,15 +94,15 @@ class GameTheme {
           backgroundColor: GameColors.signalLime,
           foregroundColor: GameColors.carbon,
           elevation: 0,
-          textStyle: GoogleFonts.spaceGrotesk(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+          textStyle: GoogleFonts.outfit(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
             letterSpacing: 0.2,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50), // Fully rounded pill shape
-            side: const BorderSide(color: GameColors.carbon, width: 1.2),
+            borderRadius: BorderRadius.circular(50),
+            side: const BorderSide(color: GameColors.carbon, width: 1.4),
           ),
         ),
       ),
@@ -112,18 +114,11 @@ class GameTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
           ),
-          textStyle: GoogleFonts.spaceGrotesk(
+          textStyle: GoogleFonts.outfit(
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
         ),
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: GameColors.surfaceWhite,
-        selectedItemColor: GameColors.carbon,
-        unselectedItemColor: GameColors.terrain,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
       ),
       dividerTheme: DividerThemeData(
         color: GameColors.borderMuted,

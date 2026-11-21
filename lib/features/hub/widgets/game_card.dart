@@ -50,7 +50,7 @@ class GameCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Tag Badges
+                // Top Badges
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -62,10 +62,10 @@ class GameCard extends StatelessWidget {
                         border: Border.all(color: GameColors.carbon, width: 1),
                       ),
                       child: Text(
-                        '5-ROUND SERIES',
-                        style: GoogleFonts.spaceMono(
+                        '5-ROUND CHALLENGE',
+                        style: GoogleFonts.outfit(
                           fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: GameColors.carbon,
                           letterSpacing: 0.5,
                         ),
@@ -74,16 +74,16 @@ class GameCard extends StatelessWidget {
                     Row(
                       children: [
                         const Icon(
-                          Icons.bolt_rounded,
+                          Icons.local_fire_department_rounded,
                           size: 16,
-                          color: GameColors.carbon,
+                          color: Colors.deepOrange,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'FEATURED EXPEDITION',
-                          style: GoogleFonts.spaceMono(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                          'FEATURED',
+                          style: GoogleFonts.outfit(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
                             color: GameColors.carbon,
                           ),
                         ),
@@ -91,22 +91,22 @@ class GameCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 16),
 
                 // Title & Subtitle
                 Text(
                   'Wordle',
-                  style: GoogleFonts.spaceGrotesk(
+                  style: GoogleFonts.outfit(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: GameColors.carbon,
-                    letterSpacing: -0.6,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '5-Round Series Lexical Tournament',
-                  style: GoogleFonts.spaceGrotesk(
+                  style: GoogleFonts.outfit(
                     fontSize: 14,
                     color: GameColors.terrain,
                     fontWeight: FontWeight.w600,
@@ -127,18 +127,19 @@ class GameCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
-                // Human-readable description
+                // Description
                 Text(
                   'Solve 5 secret words in a row. You have 6 attempts per word with live color clues and instant audio feedback. Test your vocabulary and climb the ranks!',
-                  style: GoogleFonts.spaceGrotesk(
+                  style: GoogleFonts.outfit(
                     fontSize: 13,
                     color: GameColors.carbon.withValues(alpha: 0.85),
                     height: 1.5,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
                 const SizedBox(height: 22),
 
-                // Action Buttons: Play Wordle & How to Play
+                // Action Buttons
                 Row(
                   children: [
                     OutlinedButton(
@@ -179,9 +180,9 @@ class GameCard extends StatelessWidget {
       child: Center(
         child: Text(
           letter,
-          style: GoogleFonts.spaceMono(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
             color: textColor,
           ),
         ),

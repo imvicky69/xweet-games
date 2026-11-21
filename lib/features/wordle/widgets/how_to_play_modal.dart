@@ -20,7 +20,7 @@ class HowToPlayModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.78,
+      initialChildSize: 0.76,
       minChildSize: 0.5,
       maxChildSize: 0.94,
       expand: false,
@@ -48,10 +48,9 @@ class HowToPlayModal extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: GameColors.signalLime,
                       shape: BoxShape.circle,
-                      border: Border.all(color: GameColors.carbon, width: 1),
                     ),
                     child: const Icon(
                       Icons.help_outline_rounded,
@@ -62,22 +61,23 @@ class HowToPlayModal extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     'How to Play Wordle',
-                    style: GoogleFonts.spaceGrotesk(
+                    style: GoogleFonts.outfit(
                       fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       color: GameColors.carbon,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               Text(
-                'Guess the secret 5-letter word in 6 attempts or fewer. Each guess must be a valid English word.',
-                style: GoogleFonts.spaceGrotesk(
-                  fontSize: 14,
+                'Guess the secret 5-letter word in 6 tries. After each guess, the tile colors change to give you clues!',
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
                   color: GameColors.carbon,
-                  height: 1.5,
+                  height: 1.4,
                 ),
               ),
               const SizedBox(height: 20),
@@ -87,10 +87,10 @@ class HowToPlayModal extends StatelessWidget {
                 letter: 'W',
                 bgColor: GameColors.signalLime,
                 textColor: GameColors.carbon,
-                title: 'Green — Exact Match',
-                explanation: 'The letter is in the secret word and in the exact right position!',
+                title: 'Green — Correct Spot',
+                explanation: 'The letter is in the word and in the exact right spot!',
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
 
               // Rule 2: Mist / Purple Tile
               _buildExampleTile(
@@ -98,9 +98,9 @@ class HowToPlayModal extends StatelessWidget {
                 bgColor: GameColors.mist,
                 textColor: GameColors.carbon,
                 title: 'Purple — Wrong Spot',
-                explanation: 'The letter is in the word, but belongs in a different spot.',
+                explanation: 'The letter is in the word, but in another position.',
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
 
               // Rule 3: Grey / Terrain Tile
               _buildExampleTile(
@@ -108,9 +108,9 @@ class HowToPlayModal extends StatelessWidget {
                 bgColor: GameColors.terrain,
                 textColor: Colors.white,
                 title: 'Grey — Not in Word',
-                explanation: 'The letter does not appear anywhere in the secret word.',
+                explanation: 'The letter does not appear anywhere in this word.',
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
               // 5-Round Series Tournament Rule
               Container(
@@ -126,16 +126,16 @@ class HowToPlayModal extends StatelessWidget {
                     Row(
                       children: [
                         const Icon(
-                          Icons.emoji_events_outlined,
+                          Icons.emoji_events_rounded,
                           size: 20,
                           color: GameColors.carbon,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'The 5-Round Expedition',
-                          style: GoogleFonts.spaceGrotesk(
+                          'The 5-Round Challenge',
+                          style: GoogleFonts.outfit(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
                             color: GameColors.carbon,
                           ),
                         ),
@@ -143,15 +143,11 @@ class HowToPlayModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'A complete expedition consists of 5 consecutive rounds. Solve as many rounds as you can to earn honorific ranks:\n\n'
-                      '• 5 of 5: Grandmaster Lexicographer\n'
-                      '• 4 of 5: Master Cryptic Solver\n'
-                      '• 3 of 5: Seasoned Wordsmith\n'
-                      '• 1–2 of 5: Apprentice Explorer',
-                      style: GoogleFonts.spaceGrotesk(
+                      'You play 5 rounds in a row. Solve words to climb from Apprentice Explorer up to Grandmaster Lexicographer!',
+                      style: GoogleFonts.outfit(
                         fontSize: 13,
                         color: GameColors.carbon.withValues(alpha: 0.85),
-                        height: 1.5,
+                        height: 1.4,
                       ),
                     ),
                   ],
@@ -162,7 +158,7 @@ class HowToPlayModal extends StatelessWidget {
               // Action button
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('GOT IT, LET’S PLAY'),
+                child: const Text('GOT IT, LET’S PLAY!'),
               ),
             ],
           ),
@@ -182,7 +178,7 @@ class HowToPlayModal extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: GameColors.paper,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: GameColors.borderMuted),
       ),
       child: Row(
@@ -198,9 +194,9 @@ class HowToPlayModal extends StatelessWidget {
             child: Center(
               child: Text(
                 letter,
-                style: GoogleFonts.spaceMono(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.outfit(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
                   color: textColor,
                 ),
               ),
@@ -213,16 +209,16 @@ class HowToPlayModal extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                     color: GameColors.carbon,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   explanation,
-                  style: GoogleFonts.spaceGrotesk(
+                  style: GoogleFonts.outfit(
                     fontSize: 12,
                     color: GameColors.terrain,
                   ),

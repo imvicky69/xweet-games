@@ -34,16 +34,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             side: const BorderSide(color: GameColors.error, width: 1.2),
           ),
           title: Text(
-            'Reset Series Records?',
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            'Reset Game Records?',
+            style: GoogleFonts.outfit(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
               color: GameColors.carbon,
             ),
           ),
           content: Text(
             'This will clear all your saved series ratings and round audit history. This action cannot be undone.',
-            style: GoogleFonts.spaceGrotesk(
+            style: GoogleFonts.outfit(
               fontSize: 14,
               color: GameColors.terrain,
             ),
@@ -53,8 +53,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () => Navigator.pop(context, false),
               child: Text(
                 'Cancel',
-                style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w700,
                   color: GameColors.terrain,
                 ),
               ),
@@ -77,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AudioService.instance.triggerHeavyHaptic();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All series scores and audit history reset')),
+        const SnackBar(content: Text('All game scores and history reset')),
       );
     }
   }
@@ -88,12 +88,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: GameColors.paper,
       appBar: AppBar(
         title: Text(
-          'SETTINGS & TELEMETRY',
-          style: GoogleFonts.spaceMono(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          'Settings',
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
             color: GameColors.carbon,
-            letterSpacing: 1.0,
           ),
         ),
       ),
@@ -122,16 +121,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Text(
                         'Xweet Games',
-                        style: GoogleFonts.spaceGrotesk(
+                        style: GoogleFonts.outfit(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           color: GameColors.carbon,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Tactile Editorial Light Edition',
-                        style: GoogleFonts.spaceGrotesk(
+                        'Mobile Gaming Platform',
+                        style: GoogleFonts.outfit(
                           fontSize: 12,
                           color: GameColors.terrain,
                         ),
@@ -147,11 +146,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           Text(
             'FEEDBACK & AUDIO',
-            style: GoogleFonts.spaceMono(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.outfit(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
               color: GameColors.terrain,
-              letterSpacing: 1.2,
+              letterSpacing: 0.8,
             ),
           ),
           const SizedBox(height: 8),
@@ -169,14 +168,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   activeThumbColor: GameColors.carbon,
                   title: Text(
                     'Sound Triggers',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w600,
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w700,
                       color: GameColors.carbon,
                     ),
                   ),
                   subtitle: Text(
-                    'correct.mp3, boom.mp3, close.mp3 audio triggers',
-                    style: GoogleFonts.spaceGrotesk(fontSize: 12, color: GameColors.terrain),
+                    'Game sounds and win audio cues',
+                    style: GoogleFonts.outfit(fontSize: 12, color: GameColors.terrain),
                   ),
                   secondary: const Icon(Icons.volume_up_outlined, color: GameColors.carbon),
                   value: _soundEnabled,
@@ -192,14 +191,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   activeThumbColor: GameColors.carbon,
                   title: Text(
                     'Haptic Feedback',
-                    style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w600,
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w700,
                       color: GameColors.carbon,
                     ),
                   ),
                   subtitle: Text(
-                    'Tactile vibrations on keypresses and letter reveals',
-                    style: GoogleFonts.spaceGrotesk(fontSize: 12, color: GameColors.terrain),
+                    'Vibrations on keypresses and letter reveals',
+                    style: GoogleFonts.outfit(fontSize: 12, color: GameColors.terrain),
                   ),
                   secondary: const Icon(Icons.vibration_rounded, color: GameColors.carbon),
                   value: _hapticsEnabled,
@@ -216,12 +215,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           Text(
-            'DATA & AUDIT',
-            style: GoogleFonts.spaceMono(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
+            'DATA & RECORDS',
+            style: GoogleFonts.outfit(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
               color: GameColors.terrain,
-              letterSpacing: 1.2,
+              letterSpacing: 0.8,
             ),
           ),
           const SizedBox(height: 8),
@@ -235,15 +234,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: ListTile(
               leading: const Icon(Icons.delete_outline_rounded, color: GameColors.error),
               title: Text(
-                'Reset Series History',
-                style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.w600,
+                'Reset All Records',
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w700,
                   color: GameColors.error,
                 ),
               ),
               subtitle: Text(
-                'Erase all recorded series audits and statistics',
-                style: GoogleFonts.spaceGrotesk(fontSize: 12, color: GameColors.terrain),
+                'Erase all recorded series stats and logs',
+                style: GoogleFonts.outfit(fontSize: 12, color: GameColors.terrain),
               ),
               trailing: const Icon(Icons.chevron_right_rounded, color: GameColors.terrain),
               onTap: _resetScores,
@@ -253,12 +252,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 24),
 
           Text(
-            'TELEMETRY & BUILD INFO',
-            style: GoogleFonts.spaceMono(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
+            'APP INFORMATION',
+            style: GoogleFonts.outfit(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
               color: GameColors.terrain,
-              letterSpacing: 1.2,
+              letterSpacing: 0.8,
             ),
           ),
           const SizedBox(height: 8),
@@ -275,8 +274,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildInfoRow('App Name', AppConstants.appName),
                 const SizedBox(height: 10),
                 _buildInfoRow('Global Package ID', AppConstants.packageName),
-                const SizedBox(height: 10),
-                _buildInfoRow('Design System', 'Tactile Editorial (Light)'),
                 const SizedBox(height: 10),
                 _buildInfoRow('Platform', 'Android Native'),
                 const SizedBox(height: 10),
@@ -295,16 +292,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.spaceGrotesk(
+          style: GoogleFonts.outfit(
             fontSize: 13,
             color: GameColors.terrain,
           ),
         ),
         Text(
           value,
-          style: GoogleFonts.spaceMono(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.outfit(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
             color: GameColors.carbon,
           ),
         ),
