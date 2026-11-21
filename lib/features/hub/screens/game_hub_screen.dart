@@ -44,46 +44,8 @@ class GameHubScreen extends StatelessWidget {
             // Main Content Area
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                 children: [
-                  // Friendly Welcome Message
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: GameColors.surfaceWhite,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: GameColors.borderMuted),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: GameColors.signalLime,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'GAMES AVAILABLE',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: GameColors.carbon,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
                   Text(
                     'Choose Your Game',
                     style: GoogleFonts.outfit(
