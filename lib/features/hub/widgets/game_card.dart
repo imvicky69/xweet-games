@@ -4,6 +4,8 @@ import 'package:xweet_games/core/constants/game_colors.dart';
 import 'package:xweet_games/core/services/audio_service.dart';
 import 'package:xweet_games/features/wordle/screens/wordle_detail_screen.dart';
 import 'package:xweet_games/features/wordle/widgets/how_to_play_modal.dart';
+import 'package:xweet_games/features/word_ladder/screens/ladder_lobby_screen.dart';
+import 'package:xweet_games/features/word_ladder/widgets/ladder_rules_modal.dart';
 import 'package:xweet_games/models/game_model.dart';
 
 class GameCard extends StatelessWidget {
@@ -14,15 +16,32 @@ class GameCard extends StatelessWidget {
     required this.game,
   });
 
-  void _navigateToWordle(BuildContext context) {
+  void _onPlayGame(BuildContext context) {
     AudioService.instance.triggerSelectionHaptic();
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const WordleDetailScreen()),
-    );
+    if (game.id == 'ladder') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const LadderLobbyScreen()),
+      );
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const WordleDetailScreen()),
+      );
+    }
+  }
+
+  void _onHowToPlay(BuildContext context) {
+    AudioService.instance.triggerSelectionHaptic();
+    if (game.id == 'ladder') {
+      LadderRulesModal.show(context);
+    } else {
+      HowToPlayModal.show(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLadder = game.id == 'ladder';
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -44,7 +63,7 @@ class GameCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(28),
-          onTap: () => _navigateToWordle(context),
+          onTap: () => _onPlayGame(context),
           child: Padding(
             padding: const EdgeInsets.all(22),
             child: Column(
@@ -57,12 +76,12 @@ class GameCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: GameColors.signalLime,
+                        color: game.accentColor,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(color: GameColors.carbon, width: 1),
                       ),
                       child: Text(
-                        '5-ROUND CHALLENGE',
+                        game.badgeText,
                         style: GoogleFonts.outfit(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
@@ -73,14 +92,14 @@ class GameCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.local_fire_department_rounded,
+                        Icon(
+                          isLadder ? Icons.auto_awesome_rounded : Icons.local_fire_department_rounded,
                           size: 16,
-                          color: Colors.deepOrange,
+                          color: isLadder ? const Color(0xFF6B4EE6) : Colors.deepOrange,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'FEATURED',
+                          isLadder ? 'NEW PUZZLE' : 'FEATURED',
                           style: GoogleFonts.outfit(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
@@ -95,7 +114,7 @@ class GameCard extends StatelessWidget {
 
                 // Title & Subtitle
                 Text(
-                  'Wordle',
+                  game.title,
                   style: GoogleFonts.outfit(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
@@ -105,7 +124,7 @@ class GameCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '5-Round Series Lexical Tournament',
+                  game.tagline,
                   style: GoogleFonts.outfit(
                     fontSize: 14,
                     color: GameColors.terrain,
@@ -114,22 +133,34 @@ class GameCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
 
-                // Visual Wordle Letter Tiles (W O R D L)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    _buildPreviewTile('W', GameColors.signalLime, GameColors.carbon),
-                    _buildPreviewTile('O', GameColors.mist, GameColors.carbon),
-                    _buildPreviewTile('R', GameColors.carbon, Colors.white),
-                    _buildPreviewTile('D', GameColors.terrain, Colors.white),
-                    _buildPreviewTile('L', GameColors.signalLime, GameColors.carbon),
-                  ],
-                ),
+                // Visual Letter Tiles Preview
+                if (isLadder)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildPreviewTile('S', GameColors.mist, GameColors.carbon),
+                      _buildPreviewTile('H', GameColors.signalLime, GameColors.carbon),
+                      _buildPreviewTile('I', GameColors.carbon, Colors.white),
+                      _buildPreviewTile('F', GameColors.terrain, Colors.white),
+                      _buildPreviewTile('T', GameColors.mist, GameColors.carbon),
+                    ],
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildPreviewTile('W', GameColors.signalLime, GameColors.carbon),
+                      _buildPreviewTile('O', GameColors.mist, GameColors.carbon),
+                      _buildPreviewTile('R', GameColors.carbon, Colors.white),
+                      _buildPreviewTile('D', GameColors.terrain, Colors.white),
+                      _buildPreviewTile('L', GameColors.signalLime, GameColors.carbon),
+                    ],
+                  ),
                 const SizedBox(height: 18),
 
                 // Description
                 Text(
-                  'Solve 5 secret words in a row. You have 6 attempts per word with live color clues and instant audio feedback. Test your vocabulary and climb the ranks!',
+                  game.description,
                   style: GoogleFonts.outfit(
                     fontSize: 13,
                     color: GameColors.carbon.withValues(alpha: 0.85),
@@ -143,15 +174,15 @@ class GameCard extends StatelessWidget {
                 Row(
                   children: [
                     OutlinedButton(
-                      onPressed: () => HowToPlayModal.show(context),
+                      onPressed: () => _onHowToPlay(context),
                       child: const Text('HOW TO PLAY'),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () => _navigateToWordle(context),
+                        onPressed: () => _onPlayGame(context),
                         icon: const Icon(Icons.play_arrow_rounded, size: 22),
-                        label: const Text('PLAY WORDLE'),
+                        label: Text(isLadder ? 'PLAY WORD LADDER' : 'PLAY WORDLE'),
                       ),
                     ),
                   ],

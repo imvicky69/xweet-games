@@ -82,12 +82,52 @@ class StorageService {
     await saveLastSeriesRecords(rounds);
   }
 
+  // Word Ladder (Shift) Statistics
+  int get ladderPlayed => _prefs.getInt('ladder_total_played') ?? 0;
+  int get ladderWon => _prefs.getInt('ladder_total_won') ?? 0;
+  int get ladderStreak => _prefs.getInt('ladder_daily_streak') ?? 0;
+  int get ladderBestStreak => _prefs.getInt('ladder_best_streak') ?? 0;
+  String? get lastDailyCompletedDate => _prefs.getString('ladder_last_daily_date');
+
+  bool isDailyCompletedToday() {
+    final now = DateTime.now();
+    final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    return lastDailyCompletedDate == todayStr;
+  }
+
+  Future<void> recordLadderCompleted({
+    required bool isDaily,
+    required int moves,
+    required int optimalMoves,
+  }) async {
+    final played = ladderPlayed + 1;
+    final won = ladderWon + 1;
+    await _prefs.setInt('ladder_total_played', played);
+    await _prefs.setInt('ladder_total_won', won);
+
+    if (isDaily) {
+      final now = DateTime.now();
+      final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      await _prefs.setString('ladder_last_daily_date', todayStr);
+
+      final newStreak = ladderStreak + 1;
+      final best = newStreak > ladderBestStreak ? newStreak : ladderBestStreak;
+      await _prefs.setInt('ladder_daily_streak', newStreak);
+      await _prefs.setInt('ladder_best_streak', best);
+    }
+  }
+
   Future<void> resetAllScores() async {
     await _prefs.remove('wordle_series_played');
     await _prefs.remove('wordle_series_won');
     await _prefs.remove('wordle_current_streak');
     await _prefs.remove('wordle_max_streak');
     await _prefs.remove('wordle_last_series_records');
+    await _prefs.remove('ladder_total_played');
+    await _prefs.remove('ladder_total_won');
+    await _prefs.remove('ladder_daily_streak');
+    await _prefs.remove('ladder_best_streak');
+    await _prefs.remove('ladder_last_daily_date');
     final keys = _prefs.getKeys().where((k) => k.startsWith(AppConstants.keyHighScorePrefix));
     for (final key in keys) {
       await _prefs.remove(key);

@@ -23,6 +23,19 @@ class GameHubScreen extends StatelessWidget {
       statusText: 'EXPEDITION READY',
       isPlayable: true,
     ),
+    GameModel(
+      id: 'ladder',
+      title: 'Word Ladder',
+      tagline: '4-Letter Word Transformation Puzzle',
+      description:
+          'Transform a starting word into a target word by changing one letter per move. Plan your path, discover optimal routes, and take on the Daily Challenge!',
+      category: GameCategory.puzzle,
+      icon: Icons.swap_vert_rounded,
+      accentColor: GameColors.mist,
+      badgeText: 'ONE-LETTER SHIFT',
+      statusText: 'EXPEDITION READY',
+      isPlayable: true,
+    ),
   ];
 
   void _openSettings(BuildContext context) {
