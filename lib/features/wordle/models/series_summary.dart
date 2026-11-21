@@ -12,38 +12,42 @@ class SeriesRating {
   });
 
   static SeriesRating fromScore(int solvedCount) {
-    switch (solvedCount) {
-      case 5:
-        return const SeriesRating(
-          title: 'Grandmaster Lexicographer',
-          badge: 'Flawless Deductions',
-          emoji: '👑',
-        );
-      case 4:
-        return const SeriesRating(
-          title: 'Master Cryptic Solver',
-          badge: '80% Precision',
-          emoji: '🎖️',
-        );
-      case 3:
-        return const SeriesRating(
-          title: 'Seasoned Wordsmith',
-          badge: '60% Accuracy',
-          emoji: '📜',
-        );
-      case 2:
-      case 1:
-        return const SeriesRating(
-          title: 'Apprentice Explorer',
-          badge: 'Keep Honing',
-          emoji: '🧭',
-        );
-      default:
-        return const SeriesRating(
-          title: 'Field Observer',
-          badge: 'Try Another Series',
-          emoji: '🌱',
-        );
+    if (solvedCount >= 10) {
+      return const SeriesRating(
+        title: 'Immortal Lexicographer',
+        badge: '10+ Streak Mastery',
+        emoji: '👑',
+      );
+    } else if (solvedCount >= 7) {
+      return const SeriesRating(
+        title: 'Grandmaster Wordsmith',
+        badge: '7+ Words Survived',
+        emoji: '🔥',
+      );
+    } else if (solvedCount >= 5) {
+      return const SeriesRating(
+        title: 'Master Cryptic Solver',
+        badge: '5+ Words Survived',
+        emoji: '🎖️',
+      );
+    } else if (solvedCount >= 3) {
+      return const SeriesRating(
+        title: 'Seasoned Wordsmith',
+        badge: 'Solid Performance',
+        emoji: '📜',
+      );
+    } else if (solvedCount >= 1) {
+      return const SeriesRating(
+        title: 'Apprentice Explorer',
+        badge: 'Off to a Good Start',
+        emoji: '🧭',
+      );
+    } else {
+      return const SeriesRating(
+        title: 'Field Observer',
+        badge: 'Run Ended Early',
+        emoji: '🌱',
+      );
     }
   }
 }
@@ -53,29 +57,44 @@ class SeriesSummary {
   final int solvedCount;
   final int totalRounds;
   final SeriesRating rating;
+  final bool isDaily;
 
   SeriesSummary({
     required this.rounds,
     required this.solvedCount,
     this.totalRounds = 5,
+    this.isDaily = false,
   }) : rating = SeriesRating.fromScore(solvedCount);
 
   String generateShareText({required List<List<String>> emojiGrids}) {
     final buffer = StringBuffer();
-    buffer.writeln('Xweet Wordle 5-Round Series: 0$solvedCount/0$totalRounds Solved ${rating.emoji}');
-    buffer.writeln('Rating: ${rating.title}');
-    buffer.writeln();
-
-    for (int i = 0; i < rounds.length; i++) {
-      final r = rounds[i];
-      final tries = r.isWon ? '${r.attemptsUsed}/6' : 'X/6';
-      buffer.writeln('Round 0${r.roundNumber} ($tries):');
-      if (i < emojiGrids.length) {
-        for (final row in emojiGrids[i]) {
+    if (isDaily) {
+      final r = rounds.isNotEmpty ? rounds.first : null;
+      final tries = (r != null && r.isWon) ? '${r.attemptsUsed}/6' : 'X/6';
+      buffer.writeln('Xweet Daily Wordle ($tries) 🎯');
+      buffer.writeln();
+      if (emojiGrids.isNotEmpty) {
+        for (final row in emojiGrids.first) {
           buffer.writeln(row);
         }
       }
+    } else {
+      buffer.writeln('Xweet Wordle Survival: $solvedCount Words Solved in a Row ${rating.emoji}');
+      buffer.writeln('Rating: ${rating.title}');
       buffer.writeln();
+
+      for (int i = 0; i < rounds.length; i++) {
+        final r = rounds[i];
+        final tries = r.isWon ? '${r.attemptsUsed}/6' : 'X/6';
+        final numStr = r.roundNumber < 10 ? '0${r.roundNumber}' : '${r.roundNumber}';
+        buffer.writeln('Round $numStr ($tries):');
+        if (i < emojiGrids.length) {
+          for (final row in emojiGrids[i]) {
+            buffer.writeln(row);
+          }
+        }
+        buffer.writeln();
+      }
     }
 
     buffer.writeln('https://xweet.in/wordle');

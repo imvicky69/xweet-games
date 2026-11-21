@@ -8,6 +8,7 @@ import '../models/series_summary.dart';
 class SeriesDebriefDialog extends StatelessWidget {
   final SeriesSummary summary;
   final List<List<String>> emojiGrids;
+  final bool isDaily;
   final VoidCallback onNewSeries;
   final VoidCallback onExit;
 
@@ -15,6 +16,7 @@ class SeriesDebriefDialog extends StatelessWidget {
     super.key,
     required this.summary,
     required this.emojiGrids,
+    this.isDaily = false,
     required this.onNewSeries,
     required this.onExit,
   });
@@ -23,6 +25,7 @@ class SeriesDebriefDialog extends StatelessWidget {
     required BuildContext context,
     required SeriesSummary summary,
     required List<List<String>> emojiGrids,
+    bool isDaily = false,
     required VoidCallback onNewSeries,
     required VoidCallback onExit,
   }) {
@@ -32,6 +35,7 @@ class SeriesDebriefDialog extends StatelessWidget {
       builder: (_) => SeriesDebriefDialog(
         summary: summary,
         emojiGrids: emojiGrids,
+        isDaily: isDaily,
         onNewSeries: onNewSeries,
         onExit: onExit,
       ),
@@ -45,7 +49,7 @@ class SeriesDebriefDialog extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Series debrief & emoji grid copied to clipboard!'),
+        content: Text('Result copied to clipboard!'),
         duration: Duration(seconds: 3),
       ),
     );
@@ -53,7 +57,8 @@ class SeriesDebriefDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rating = summary.rating;
+    final isWon = summary.solvedCount > 0;
+    final lastRound = summary.rounds.isNotEmpty ? summary.rounds.last : null;
 
     return AlertDialog(
       backgroundColor: GameColors.surfaceWhite,
@@ -67,12 +72,19 @@ class SeriesDebriefDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Rating Emoji Icon
-            Text(rating.emoji, style: const TextStyle(fontSize: 44)),
+            Text(
+              isDaily
+                  ? (isWon ? '🎯' : '🌱')
+                  : summary.rating.emoji,
+              style: const TextStyle(fontSize: 44),
+            ),
             const SizedBox(height: 8),
 
             // Rating Title
             Text(
-              rating.title,
+              isDaily
+                  ? (isWon ? 'Daily Wordle Solved!' : 'Daily Wordle Over')
+                  : 'Survival Run Over',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
                 fontSize: 22,
@@ -86,12 +98,16 @@ class SeriesDebriefDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: GameColors.signalLime,
+                color: isDaily
+                    ? (isWon ? GameColors.signalLime : GameColors.paper)
+                    : GameColors.signalLime,
                 borderRadius: BorderRadius.circular(50),
                 border: Border.all(color: GameColors.carbon, width: 1),
               ),
               child: Text(
-                rating.badge,
+                isDaily
+                    ? (isWon ? 'GAME OF THE DAY SOLVED' : 'OUT OF ATTEMPTS')
+                    : '${summary.solvedCount} Words Solved in a Row',
                 style: GoogleFonts.outfit(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
@@ -99,79 +115,107 @@ class SeriesDebriefDialog extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
 
-            // Score Summary
-            Text(
-              '${summary.solvedCount} of ${summary.totalRounds} Solved',
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: GameColors.carbon,
+            // Missed Word Info if not won
+            if (lastRound != null && !lastRound.isWon) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: GameColors.paper,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: GameColors.borderMuted),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'The secret word was:',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        color: GameColors.terrain,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      lastRound.targetWord.toUpperCase(),
+                      style: GoogleFonts.outfit(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: GameColors.carbon,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 14),
+            ],
 
-            // 5-Round Audit Trail
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: GameColors.paper,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: GameColors.borderMuted),
-              ),
-              child: Column(
-                children: summary.rounds.map((r) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: r.isWon ? GameColors.signalLime : GameColors.terrain.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: GameColors.carbon.withValues(alpha: 0.3)),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '0${r.roundNumber}',
-                              style: GoogleFonts.outfit(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: GameColors.carbon,
+            // Rounds Audit Trail (for survival run)
+            if (!isDaily && summary.rounds.isNotEmpty) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: GameColors.paper,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: GameColors.borderMuted),
+                ),
+                child: Column(
+                  children: summary.rounds.map((r) {
+                    final numStr = r.roundNumber < 10 ? '0${r.roundNumber}' : '${r.roundNumber}';
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: r.isWon ? GameColors.signalLime : GameColors.terrain.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: GameColors.carbon.withValues(alpha: 0.3)),
+                            ),
+                            child: Center(
+                              child: Text(
+                                numStr,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: GameColors.carbon,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            r.targetWord.toUpperCase(),
-                            style: GoogleFonts.outfit(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: GameColors.carbon,
-                              letterSpacing: 0.8,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              r.targetWord.toUpperCase(),
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: GameColors.carbon,
+                                letterSpacing: 0.8,
+                              ),
                             ),
                           ),
-                        ),
-                        Text(
-                          r.isWon ? '${r.attemptsUsed}/6' : 'MISSED',
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: r.isWon ? GameColors.carbon : GameColors.terrain,
+                          Text(
+                            r.isWon ? '${r.attemptsUsed}/6' : 'MISSED',
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: r.isWon ? GameColors.carbon : GameColors.terrain,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
-            const SizedBox(height: 18),
+              const SizedBox(height: 16),
+            ],
 
             // Buttons
             Row(
@@ -183,16 +227,18 @@ class SeriesDebriefDialog extends StatelessWidget {
                     label: const Text('SHARE'),
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      onNewSeries();
-                    },
-                    child: const Text('PLAY AGAIN'),
+                if (!isDaily) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        onNewSeries();
+                      },
+                      child: const Text('PLAY AGAIN'),
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
             const SizedBox(height: 8),

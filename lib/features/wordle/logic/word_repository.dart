@@ -42,6 +42,16 @@ class WordRepository {
     return _validGuessSet.contains(word.toUpperCase());
   }
 
+  /// Selects the deterministic daily word for a given [date] (Game of the Day)
+  Future<String> selectDailyWord(DateTime date) async {
+    await init();
+    if (_allWords.isEmpty) return 'PLANT';
+    final poolLimit = min(1500, _allWords.length);
+    final dateSeed = date.year * 10000 + date.month * 100 + date.day;
+    final rng = Random(dateSeed);
+    return _allWords[rng.nextInt(poolLimit)];
+  }
+
   /// Selects a target word according to difficulty tier, current round,
   /// and applies the Recency Anti-Repeat Filter (wordle.md Section 4)
   Future<String> selectTargetWord({

@@ -81,7 +81,7 @@ class GameCard extends StatelessWidget {
                         border: Border.all(color: GameColors.carbon, width: 1),
                       ),
                       child: Text(
-                        isLadder ? 'ONE-LETTER SHIFT' : '5-ROUND SERIES',
+                        isLadder ? 'ONE-LETTER SHIFT' : 'DAILY & SURVIVAL',
                         style: GoogleFonts.outfit(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,

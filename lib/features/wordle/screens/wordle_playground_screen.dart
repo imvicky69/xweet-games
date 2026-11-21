@@ -19,10 +19,12 @@ import '../widgets/wordle_keyboard.dart';
 
 class WordlePlaygroundScreen extends StatefulWidget {
   final WordleDifficulty difficulty;
+  final bool isDaily;
 
   const WordlePlaygroundScreen({
     super.key,
-    required this.difficulty,
+    this.difficulty = WordleDifficulty.progressive,
+    this.isDaily = false,
   });
 
   @override
@@ -31,7 +33,6 @@ class WordlePlaygroundScreen extends StatefulWidget {
 
 class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with SingleTickerProviderStateMixin {
   int _currentRound = 1;
-  final int _totalRounds = 5;
 
   String _targetWord = '';
   final List<String> _guesses = [];
@@ -89,10 +90,15 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
       _toastMessage = null;
     });
 
-    final target = await WordRepository.instance.selectTargetWord(
-      difficulty: widget.difficulty,
-      roundNumber: roundNum,
-    );
+    final String target;
+    if (widget.isDaily) {
+      target = await WordRepository.instance.selectDailyWord(DateTime.now());
+    } else {
+      target = await WordRepository.instance.selectTargetWord(
+        difficulty: widget.difficulty,
+        roundNumber: roundNum,
+      );
+    }
 
     if (!mounted) return;
     setState(() {
@@ -165,10 +171,8 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
       AudioService.instance.triggerHeavyHaptic();
       AudioService.instance.playTapSound();
     } else if (evaluation.allMissing) {
-      // Boom sound trigger (all letters absent)
       AudioService.instance.triggerHeavyHaptic();
     } else if (evaluation.isClose) {
-      // Close call trigger
       AudioService.instance.triggerHaptic();
     }
 
@@ -191,18 +195,15 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
       _currentInput = '';
       _toastMessage = null;
 
-      // Update virtual keyboard key colors with resolution priority:
-      // CORRECT > PRESENT > ABSENT > UNTOUCHED
+      // Update virtual keyboard key colors
       for (int i = 0; i < 5; i++) {
         final char = guess[i];
         final newState = evaluation.tileStates[i];
         final existingState = _keyStates[char];
 
         if (existingState == TileState.correct) {
-          // Correct trumps everything
           continue;
         } else if (existingState == TileState.present && newState == TileState.absent) {
-          // Present trumps absent
           continue;
         } else {
           _keyStates[char] = newState;
@@ -230,36 +231,23 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
       _roundHistory.add(record);
       _seriesEmojiGrids.add(List.from(_currentRoundEmojiRows));
 
-      if (_currentRound < _totalRounds) {
-        // Mid-Series Modal (Rounds 1–4)
-        MidSeriesModal.show(
-          context: context,
-          completedRound: _currentRound,
-          isWon: won,
-          attemptsUsed: _guesses.length,
-          targetWord: _targetWord,
-          onProceed: () => _startRound(_currentRound + 1),
-        );
-      } else {
-        // Final Series Debrief (After Round 5)
-        final solvedCount = _roundHistory.where((r) => r.isWon).length;
+      if (widget.isDaily) {
+        // Daily Wordle Finished
+        await StorageService.instance.recordWordleDailyCompleted(won: won);
+        if (!mounted) return;
+
         final summary = SeriesSummary(
           rounds: _roundHistory,
-          solvedCount: solvedCount,
-          totalRounds: _totalRounds,
+          solvedCount: won ? 1 : 0,
+          totalRounds: 1,
+          isDaily: true,
         );
 
-        // Record career stats
-        await StorageService.instance.recordSeriesFinished(
-          won: solvedCount >= 3,
-          rounds: _roundHistory,
-        );
-
-        if (!mounted) return;
         SeriesDebriefDialog.show(
           context: context,
           summary: summary,
           emojiGrids: _seriesEmojiGrids,
+          isDaily: true,
           onNewSeries: () {
             setState(() {
               _roundHistory.clear();
@@ -269,6 +257,49 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
           },
           onExit: () => Navigator.of(context).pop(),
         );
+      } else {
+        // Endless Survival Mode
+        if (won) {
+          // Solved! Keep advancing endlessly: Round 1, 2, 3, ...
+          MidSeriesModal.show(
+            context: context,
+            completedRound: _currentRound,
+            isWon: true,
+            attemptsUsed: _guesses.length,
+            targetWord: _targetWord,
+            onProceed: () => _startRound(_currentRound + 1),
+          );
+        } else {
+          // Lost ("user get outs of box and get wrong then their round ends")
+          final streak = _roundHistory.where((r) => r.isWon).length;
+          await StorageService.instance.recordWordleSurvivalFinished(
+            streak: streak,
+            rounds: _roundHistory,
+          );
+
+          if (!mounted) return;
+          final summary = SeriesSummary(
+            rounds: _roundHistory,
+            solvedCount: streak,
+            totalRounds: _currentRound,
+            isDaily: false,
+          );
+
+          SeriesDebriefDialog.show(
+            context: context,
+            summary: summary,
+            emojiGrids: _seriesEmojiGrids,
+            isDaily: false,
+            onNewSeries: () {
+              setState(() {
+                _roundHistory.clear();
+                _seriesEmojiGrids.clear();
+              });
+              _startRound(1);
+            },
+            onExit: () => Navigator.of(context).pop(),
+          );
+        }
       }
     }
   }
@@ -287,7 +318,7 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
             side: const BorderSide(color: GameColors.carbon, width: 1.2),
           ),
           title: Text(
-            'Leave Expedition?',
+            'Leave Game?',
             style: GoogleFonts.outfit(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -295,7 +326,9 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
             ),
           ),
           content: Text(
-            'Your progress in this 5-round tournament will be lost if you exit now.',
+            widget.isDaily
+                ? 'Your progress in today’s daily wordle will be lost if you exit.'
+                : 'Your current survival streak will end if you exit now.',
             style: GoogleFonts.outfit(
               fontSize: 14,
               color: GameColors.terrain,
@@ -349,6 +382,7 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
               }
             },
           ),
+          titleSpacing: 0,
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -360,7 +394,9 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
                   border: Border.all(color: GameColors.carbon, width: 1),
                 ),
                 child: Text(
-                  'ROUND 0$_currentRound / 0$_totalRounds',
+                  widget.isDaily
+                      ? 'DAILY WORDLE'
+                      : 'ROUND ${_currentRound < 10 ? '0$_currentRound' : '$_currentRound'}',
                   style: GoogleFonts.outfit(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
@@ -380,10 +416,14 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded, size: 14, color: GameColors.carbon),
+                    Icon(
+                      widget.isDaily ? Icons.pin_drop_outlined : Icons.local_fire_department_rounded,
+                      size: 14,
+                      color: widget.isDaily ? GameColors.carbon : Colors.deepOrange,
+                    ),
                     const SizedBox(width: 4),
                     Text(
-                      '$solvedSoFar Pt${solvedSoFar == 1 ? '' : 's'}',
+                      widget.isDaily ? '6 Guesses' : 'Streak $solvedSoFar',
                       style: GoogleFonts.outfit(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -395,96 +435,70 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
               ),
             ],
           ),
-          centerTitle: true,
+          centerTitle: false,
           actions: [
-            // Sound Mute Toggle
-            IconButton(
-              icon: Icon(
-                AudioService.instance.soundEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-                color: GameColors.carbon,
-              ),
-              onPressed: () {
-                setState(() {
-                  AudioService.instance.soundEnabled = !AudioService.instance.soundEnabled;
-                });
-                StorageService.instance.setSoundEnabled(AudioService.instance.soundEnabled);
-              },
-              tooltip: 'Toggle Sound',
-            ),
-            // Help Modal
             IconButton(
               icon: const Icon(Icons.help_outline_rounded, color: GameColors.carbon),
+              tooltip: 'How to Play',
               onPressed: () => HowToPlayModal.show(context),
-              tooltip: 'Rules',
             ),
             const SizedBox(width: 4),
           ],
         ),
         body: SafeArea(
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: GameColors.carbon),
-                )
-              : Column(
-                  children: [
-                    // Difficulty indicator pill
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        '${widget.difficulty.title} Mode • 6 Attempts',
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: GameColors.terrain,
+          child: Column(
+            children: [
+              // Error feedback toast
+              SizedBox(
+                height: 32,
+                child: _toastMessage != null
+                    ? Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: GameColors.carbon,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Text(
+                            _toastMessage!,
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: GameColors.paper,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
 
-                    // Toast message banner on error/shake
-                    SizedBox(
-                      height: 26,
-                      child: _toastMessage != null
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: GameColors.carbon,
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text(
-                                _toastMessage!,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: GameColors.paper,
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
-
-                    // Center 5x6 Wordle Grid
-                    Expanded(
-                      child: Center(
-                        child: WordleGrid(
-                          guesses: _guesses,
-                          evaluations: _evaluations,
-                          currentInput: _currentInput,
-                          maxAttempts: 6,
-                          shakeAnimation: _shakeAnimation,
+              // 6x5 Wordle Matrix Grid
+              Expanded(
+                child: Center(
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: GameColors.carbon)
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                          child: WordleGrid(
+                            guesses: _guesses,
+                            evaluations: _evaluations,
+                            currentInput: _currentInput,
+                            shakeAnimation: _shakeAnimation,
+                          ),
                         ),
-                      ),
-                    ),
-
-                    // Virtual Keyboard
-                    WordleKeyboard(
-                      keyStates: _keyStates,
-                      onKeyTapped: _onKeyTapped,
-                      onEnterTapped: _onEnterTapped,
-                      onDeleteTapped: _onDeleteTapped,
-                    ),
-                    const SizedBox(height: 6),
-                  ],
                 ),
+              ),
+
+              // Tactical Keyboard
+              WordleKeyboard(
+                keyStates: _keyStates,
+                onKeyTapped: _onKeyTapped,
+                onEnterTapped: _onEnterTapped,
+                onDeleteTapped: _onDeleteTapped,
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );

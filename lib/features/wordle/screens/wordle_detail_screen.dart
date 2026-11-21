@@ -34,16 +34,43 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
     StorageService.instance.setWordleDifficulty(difficulty.id);
   }
 
-  void _onStartGame() {
+  String _formatDate(DateTime date) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  void _playDailyWordle() {
     AudioService.instance.triggerHeavyHaptic();
     AudioService.instance.playTapSound();
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => WordlePlaygroundScreen(difficulty: _selectedDifficulty),
+        builder: (_) => const WordlePlaygroundScreen(isDaily: true),
       ),
     ).then((_) {
-      // Refresh stats & records when returning from playground
+      if (mounted) {
+        setState(() {
+          _lastRecords = StorageService.instance.getLastSeriesRecords();
+        });
+      }
+    });
+  }
+
+  void _startEndlessRun() {
+    AudioService.instance.triggerHeavyHaptic();
+    AudioService.instance.playTapSound();
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => WordlePlaygroundScreen(
+          isDaily: false,
+          difficulty: _selectedDifficulty,
+        ),
+      ),
+    ).then((_) {
       if (mounted) {
         setState(() {
           _lastRecords = StorageService.instance.getLastSeriesRecords();
@@ -54,11 +81,14 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDailyDone = StorageService.instance.isWordleDailyCompletedToday();
+    final todayFormatted = _formatDate(DateTime.now());
+
     return Scaffold(
       backgroundColor: GameColors.paper,
       appBar: AppBar(
         title: Text(
-          'Xweet Wordle',
+          'Wordle',
           style: GoogleFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -66,7 +96,6 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
           ),
         ),
         actions: [
-          // Single, elegant "How to Play" action in header
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: InkWell(
@@ -107,151 +136,282 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
           children: [
-            // Scrollable Content
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                children: [
-                  // Game Hero Card
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: GameColors.surfaceWhite,
-                      borderRadius: BorderRadius.circular(26),
-                      border: Border.all(color: GameColors.borderMuted),
-                      boxShadow: [
-                        BoxShadow(
-                          color: GameColors.carbon.withValues(alpha: 0.04),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: GameColors.signalLime,
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(color: GameColors.carbon, width: 1),
-                              ),
-                              child: Text(
-                                '5-ROUND CHALLENGE',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  color: GameColors.carbon,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Wordle Tournament',
-                          style: GoogleFonts.outfit(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            color: GameColors.carbon,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Guess 5 secret words in a row with live color hints and sound effects. Can you solve all 5?',
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            color: GameColors.terrain,
-                            fontWeight: FontWeight.w500,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  // Player Stats Cards (Game-friendly with icons)
-                  _buildGameStats(),
-
-                  const SizedBox(height: 22),
-
-                  // Difficulty Selection
-                  _buildDifficultySelection(),
-
-                  const SizedBox(height: 22),
-
-                  // Recent Games Record Log
-                  _buildRecentRoundsLog(),
-                ],
-              ),
-            ),
-
-            // Single Prominent, Full-Width Bottom CTA Button
+            // Game Hero Card
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: GameColors.surfaceWhite,
-                border: Border(
-                  top: BorderSide(color: GameColors.borderMuted, width: 1),
-                ),
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(color: GameColors.borderMuted),
                 boxShadow: [
                   BoxShadow(
-                    color: GameColors.carbon.withValues(alpha: 0.05),
-                    blurRadius: 12,
-                    offset: const Offset(0, -3),
+                    color: GameColors.carbon.withValues(alpha: 0.04),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _onStartGame,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      const Icon(Icons.play_arrow_rounded, size: 26),
-                      const SizedBox(width: 8),
-                      Text(
-                        'START 5-ROUND GAME',
-                        style: GoogleFonts.outfit(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: GameColors.carbon.withValues(alpha: 0.12),
+                          color: GameColors.signalLime,
                           borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: GameColors.carbon, width: 1),
                         ),
                         child: Text(
-                          _selectedDifficulty.badge,
+                          'DAILY & SURVIVAL',
                           style: GoogleFonts.outfit(
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             color: GameColors.carbon,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Wordle Expedition',
+                    style: GoogleFonts.outfit(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: GameColors.carbon,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Play the synchronized Game of the Day or test your limits in Endless Survival mode where one mistake ends your run.',
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      color: GameColors.terrain,
+                      fontWeight: FontWeight.w500,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
               ),
             ),
+
+            const SizedBox(height: 18),
+
+            // Career Stats Row
+            _buildGameStats(),
+
+            const SizedBox(height: 22),
+
+            // Mode 1: Daily Wordle Card (Game of the Day)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: GameColors.surfaceWhite,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isDailyDone ? GameColors.borderMuted : GameColors.carbon,
+                  width: isDailyDone ? 1.0 : 1.6,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (isDailyDone ? GameColors.carbon : GameColors.signalLime).withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: GameColors.signalLime,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: GameColors.carbon, width: 1),
+                        ),
+                        child: Text(
+                          'GAME OF THE DAY',
+                          style: GoogleFonts.outfit(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: GameColors.carbon,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        todayFormatted,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: GameColors.terrain,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Daily Wordle',
+                    style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: GameColors.carbon,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'One 5-letter secret word for all players today. You have 6 attempts to deduce it with live color clues.',
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      color: GameColors.terrain,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  if (isDailyDone)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: GameColors.signalLime.withValues(alpha: 0.35),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: GameColors.carbon.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.check_circle_rounded, color: GameColors.carbon, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Completed today! Daily streak: ${StorageService.instance.wordleDailyStreak}',
+                            style: GoogleFonts.outfit(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: GameColors.carbon,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _playDailyWordle,
+                      icon: Icon(
+                        isDailyDone ? Icons.replay_rounded : Icons.play_arrow_rounded,
+                        size: 22,
+                      ),
+                      label: Text(
+                        isDailyDone ? 'REPLAY TODAY’S WORDLE' : 'PLAY DAILY WORDLE',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            // Mode 2: Endless Survival Run Card
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: GameColors.surfaceWhite,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: GameColors.borderMuted, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: GameColors.carbon.withValues(alpha: 0.04),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: GameColors.carbon,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Text(
+                          'ENDLESS SURVIVAL',
+                          style: GoogleFonts.outfit(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: GameColors.paper,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'BEST: ${StorageService.instance.wordleSurvivalBestStreak} WORDS',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: GameColors.terrain,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Endless Streak Run',
+                    style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: GameColors.carbon,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Solve consecutive words from Round 1 onward. If you run out of guesses on any round, your run ends immediately!',
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      color: GameColors.terrain,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Difficulty Selection
+                  _buildDifficultySelection(),
+
+                  const SizedBox(height: 16),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _startEndlessRun,
+                      icon: const Icon(Icons.local_fire_department_rounded, size: 22),
+                      label: const Text('START ENDLESS RUN'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 22),
+
+            // Recent Game Records Log
+            _buildRecentRoundsLog(),
           ],
         ),
       ),
@@ -259,10 +419,10 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
   }
 
   Widget _buildGameStats() {
-    final played = StorageService.instance.seriesPlayed;
-    final won = StorageService.instance.seriesWon;
-    final winRate = StorageService.instance.winRatePercent.toStringAsFixed(0);
-    final streak = StorageService.instance.currentStreak;
+    final runs = StorageService.instance.wordleSurvivalTotalRuns;
+    final wordsSolved = StorageService.instance.wordleSurvivalWordsSolved;
+    final dailyStreak = StorageService.instance.wordleDailyStreak;
+    final bestStreak = StorageService.instance.wordleSurvivalBestStreak;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -274,13 +434,13 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatPill('🎮', '$played', 'Games'),
+          _buildStatPill('🎮', '$runs', 'Runs'),
           Container(width: 1, height: 32, color: GameColors.borderMuted),
-          _buildStatPill('🏆', '$won', 'Wins'),
+          _buildStatPill('🏆', '$wordsSolved', 'Solved'),
           Container(width: 1, height: 32, color: GameColors.borderMuted),
-          _buildStatPill('🎯', '$winRate%', 'Accuracy'),
+          _buildStatPill('🗓️', '$dailyStreak', 'Daily'),
           Container(width: 1, height: 32, color: GameColors.borderMuted),
-          _buildStatPill('🔥', '$streak', 'Streak'),
+          _buildStatPill('🔥', '$bestStreak', 'Best Streak'),
         ],
       ),
     );
@@ -322,138 +482,44 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Choose Difficulty',
+          'Difficulty Setting',
           style: GoogleFonts.outfit(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
             color: GameColors.carbon,
           ),
         ),
-        const SizedBox(height: 10),
-        ...WordleDifficulty.values.map((diff) {
-          final isSelected = _selectedDifficulty == diff;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: isSelected ? Colors.white : GameColors.surfaceWhite,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected ? GameColors.carbon : GameColors.borderMuted,
-                width: isSelected ? 1.6 : 1.0,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: GameColors.signalLime.withValues(alpha: 0.35),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () => _onDifficultySelected(diff),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          // Radio indicator
-                          Container(
-                            width: 22,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected ? GameColors.carbon : GameColors.terrain,
-                                width: 2,
-                              ),
-                              color: isSelected ? GameColors.signalLime : Colors.transparent,
-                            ),
-                            child: isSelected
-                                ? Center(
-                                    child: Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: GameColors.carbon,
-                                      ),
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 12),
-                          // Title & Badge
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text(
-                                  diff.title,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: GameColors.carbon,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? GameColors.signalLime : GameColors.paper,
-                                    borderRadius: BorderRadius.circular(50),
-                                    border: Border.all(
-                                      color: isSelected ? GameColors.carbon : GameColors.borderMuted,
-                                      width: 0.8,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    diff.badge,
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w800,
-                                      color: GameColors.carbon,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Pool size
-                          Text(
-                            diff.poolSize,
-                            style: GoogleFonts.outfit(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: isSelected ? GameColors.carbon : GameColors.terrain,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 34),
-                        child: Text(
-                          diff.description,
-                          style: GoogleFonts.outfit(
-                            fontSize: 12,
-                            color: GameColors.terrain,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ],
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: WordleDifficulty.values.map((diff) {
+            final isSelected = _selectedDifficulty == diff;
+            return InkWell(
+              borderRadius: BorderRadius.circular(50),
+              onTap: () => _onDifficultySelected(diff),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isSelected ? GameColors.signalLime : GameColors.paper,
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    color: isSelected ? GameColors.carbon : GameColors.borderMuted,
+                    width: isSelected ? 1.4 : 1.0,
+                  ),
+                ),
+                child: Text(
+                  diff.title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    color: GameColors.carbon,
                   ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          }).toList(),
+        ),
       ],
     );
   }
@@ -466,7 +532,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Previous Game Records',
+              'Previous Run Records',
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
@@ -512,7 +578,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'No games logged yet',
+                        'No runs logged yet',
                         style: GoogleFonts.outfit(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -521,7 +587,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Complete your first 5-round game to see your rounds, words, and scores logged here.',
+                        'Complete a daily puzzle or survival run to see your round records here.',
                         style: GoogleFonts.outfit(
                           fontSize: 13,
                           color: GameColors.terrain,
@@ -544,6 +610,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
             ),
             child: Column(
               children: _lastRecords.map((r) {
+                final numStr = r.roundNumber < 10 ? '0${r.roundNumber}' : '${r.roundNumber}';
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
@@ -558,7 +625,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            '0${r.roundNumber}',
+                            numStr,
                             style: GoogleFonts.outfit(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,

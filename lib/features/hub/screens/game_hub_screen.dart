@@ -13,13 +13,13 @@ class GameHubScreen extends StatelessWidget {
     GameModel(
       id: 'wordle',
       title: 'Wordle',
-      tagline: '5-Round Series Lexical Tournament',
+      tagline: 'Daily Word & Endless Streak Survival',
       description:
-          'Solve 5 secret words in a row. You have 6 attempts per word with live color clues and instant audio feedback. Test your vocabulary and climb the ranks!',
+          'Solve the Game of the Day or survive consecutive rounds from 1 onward until your first miss! Live color clues and instant feedback.',
       category: GameCategory.lexical,
       icon: Icons.grid_view_rounded,
       accentColor: GameColors.signalLime,
-      badgeText: '5-ROUND SERIES',
+      badgeText: 'DAILY & SURVIVAL',
       statusText: 'EXPEDITION READY',
       isPlayable: true,
     ),

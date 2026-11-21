@@ -49,6 +49,57 @@ class StorageService {
 
   double get winRatePercent => seriesPlayed == 0 ? 0 : (seriesWon / seriesPlayed) * 100;
 
+  // Daily Wordle (Game of the Day)
+  int get wordleDailyPlayed => _prefs.getInt('wordle_daily_played') ?? 0;
+  int get wordleDailyWon => _prefs.getInt('wordle_daily_won') ?? 0;
+  int get wordleDailyStreak => _prefs.getInt('wordle_daily_streak') ?? 0;
+  int get wordleDailyBestStreak => _prefs.getInt('wordle_daily_best_streak') ?? 0;
+  String? get wordleLastDailyDate => _prefs.getString('wordle_last_daily_date');
+
+  bool isWordleDailyCompletedToday() {
+    final now = DateTime.now();
+    final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    return wordleLastDailyDate == todayStr;
+  }
+
+  Future<void> recordWordleDailyCompleted({required bool won}) async {
+    final now = DateTime.now();
+    final todayStr = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    await _prefs.setString('wordle_last_daily_date', todayStr);
+
+    final played = wordleDailyPlayed + 1;
+    final wins = wordleDailyWon + (won ? 1 : 0);
+    final streak = won ? (wordleDailyStreak + 1) : 0;
+    final best = streak > wordleDailyBestStreak ? streak : wordleDailyBestStreak;
+
+    await _prefs.setInt('wordle_daily_played', played);
+    await _prefs.setInt('wordle_daily_won', wins);
+    await _prefs.setInt('wordle_daily_streak', streak);
+    await _prefs.setInt('wordle_daily_best_streak', best);
+  }
+
+  // Wordle Endless Survival Mode
+  int get wordleSurvivalBestStreak => _prefs.getInt('wordle_survival_best_streak') ?? maxStreak;
+  int get wordleSurvivalTotalRuns => _prefs.getInt('wordle_survival_total_runs') ?? seriesPlayed;
+  int get wordleSurvivalWordsSolved => _prefs.getInt('wordle_survival_words_solved') ?? seriesWon;
+
+  Future<void> recordWordleSurvivalFinished({
+    required int streak,
+    required List<RoundRecord> rounds,
+  }) async {
+    final runs = wordleSurvivalTotalRuns + 1;
+    final solved = wordleSurvivalWordsSolved + streak;
+    final best = streak > wordleSurvivalBestStreak ? streak : wordleSurvivalBestStreak;
+
+    await _prefs.setInt('wordle_survival_total_runs', runs);
+    await _prefs.setInt('wordle_survival_words_solved', solved);
+    await _prefs.setInt('wordle_survival_best_streak', best);
+    await _prefs.setInt('wordle_series_played', runs);
+    await _prefs.setInt('wordle_series_won', solved);
+    await _prefs.setInt('wordle_max_streak', best);
+    await saveLastSeriesRecords(rounds);
+  }
+
   // Last Series Round Audit Records
   List<RoundRecord> getLastSeriesRecords() {
     final raw = _prefs.getString('wordle_last_series_records');

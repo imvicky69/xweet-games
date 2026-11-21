@@ -83,7 +83,7 @@ class MidSeriesModal extends StatelessWidget {
 
           // Title
           Text(
-            isWon ? 'Splendid Deduction!' : 'Round Missed',
+            isWon ? 'Round $completedRound Solved!' : 'Round Missed',
             style: GoogleFonts.outfit(
               fontSize: 22,
               fontWeight: FontWeight.w800,
@@ -95,7 +95,7 @@ class MidSeriesModal extends StatelessWidget {
           // Subtitle
           Text(
             isWon
-                ? 'Solved in $attemptsUsed of 6 attempts • +1 Point awarded'
+                ? 'Solved in $attemptsUsed of 6 attempts • Streak: $completedRound Words 🔥'
                 : 'All 6 attempts used for this round.',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
@@ -165,7 +165,7 @@ class MidSeriesModal extends StatelessWidget {
                 Navigator.of(context).pop();
                 onProceed();
               },
-              child: Text('PROCEED TO ROUND 0$nextRound'),
+              child: Text('ADVANCE TO ROUND ${nextRound < 10 ? '0$nextRound' : '$nextRound'}'),
             ),
           ),
         ],

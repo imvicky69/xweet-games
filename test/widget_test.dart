@@ -37,11 +37,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(WordleDetailScreen), findsOneWidget);
-    expect(find.text('Wordle Tournament'), findsOneWidget);
-    expect(find.text('Choose Difficulty'), findsOneWidget);
+    expect(find.text('Wordle Expedition'), findsOneWidget);
+    expect(find.text('Daily Wordle'), findsOneWidget);
+    expect(find.text('Endless Streak Run'), findsOneWidget);
 
-    // Tap START 5-ROUND GAME to launch playground
-    await tester.tap(find.text('START 5-ROUND GAME'));
+    final startEndlessBtn = find.text('START ENDLESS RUN');
+    await tester.scrollUntilVisible(startEndlessBtn, 200);
+    await tester.pumpAndSettle();
+
+    // Tap START ENDLESS RUN to launch playground
+    await tester.tap(startEndlessBtn);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
@@ -50,7 +55,7 @@ void main() {
     expect(find.byType(WordlePlaygroundScreen), findsOneWidget);
     expect(find.byType(WordleGrid), findsOneWidget);
     expect(find.byType(WordleKeyboard), findsOneWidget);
-    expect(find.text('ROUND 01 / 05'), findsOneWidget);
+    expect(find.text('ROUND 01'), findsOneWidget);
 
     // Tap keyboard keys 'P', 'L', 'A', 'N', 'T'
     await tester.tap(find.text('P'));
