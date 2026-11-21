@@ -41,47 +41,33 @@ class XweetAppHeader extends StatelessWidget {
 
           // Brand Wordmark
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'XWEET',
-                      style: GoogleFonts.outfit(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        color: GameColors.carbon,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: GameColors.signalLime,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: GameColors.carbon, width: 1),
-                      ),
-                      child: Text(
-                        'GAMES',
-                        style: GoogleFonts.outfit(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: GameColors.carbon,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
                 Text(
-                  'Modern Mobile Gaming Hub',
+                  'XWEET',
                   style: GoogleFonts.outfit(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: GameColors.terrain,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: GameColors.carbon,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: GameColors.signalLime,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: GameColors.carbon, width: 1),
+                  ),
+                  child: Text(
+                    'GAMES',
+                    style: GoogleFonts.outfit(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: GameColors.carbon,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ],
