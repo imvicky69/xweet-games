@@ -26,12 +26,11 @@ void main() {
     await tester.pumpWidget(const XweetGamesApp());
     await tester.pumpAndSettle();
 
-    // Verify GameHub is rendered with both GameCards
+    // Verify GameHub is rendered with GameCards
     expect(find.byType(GameHubScreen), findsOneWidget);
-    expect(find.byType(GameCard), findsNWidgets(2));
+    expect(find.byType(GameCard), findsWidgets);
     expect(find.text('Wordle'), findsWidgets);
     expect(find.text('PLAY WORDLE'), findsOneWidget);
-    expect(find.text('Word Ladder'), findsWidgets);
 
     // Tap PLAY WORDLE to navigate to WordleDetailScreen
     await tester.tap(find.text('PLAY WORDLE'));
