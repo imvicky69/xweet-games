@@ -306,9 +306,147 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
     }
   }
 
+  Future<void> _onGiveUp() async {
+    if (_isLoading || _isProcessingGuess) return;
+    AudioService.instance.triggerSelectionHaptic();
+
+    final solvedSoFar = _roundHistory.where((r) => r.isWon).length;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: GameColors.surfaceWhite,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: GameColors.carbon, width: 1.2),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.flag_rounded, color: GameColors.carbon, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'Give Up Round?',
+                style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: GameColors.carbon,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            widget.isDaily
+                ? 'Giving up reveals today’s secret word and concludes your daily challenge.'
+                : 'Giving up reveals the secret word. Your survival run of $solvedSoFar solved ${solvedSoFar == 1 ? 'word' : 'words'} will be recorded in your career stats.',
+            style: GoogleFonts.outfit(
+              fontSize: 13.5,
+              color: GameColors.terrain,
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                'KEEP TRYING',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: GameColors.terrain),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: GameColors.carbon,
+                foregroundColor: GameColors.paper,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: Text(
+                'GIVE UP & REVEAL',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 12),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true && mounted) {
+      await _handleRoundGiveUp();
+    }
+  }
+
+  Future<void> _handleRoundGiveUp() async {
+    final record = RoundRecord(
+      roundNumber: _currentRound,
+      targetWord: _targetWord,
+      attemptsUsed: _guesses.length,
+      isWon: false,
+    );
+    _roundHistory.add(record);
+    _seriesEmojiGrids.add(List.from(_currentRoundEmojiRows));
+
+    if (widget.isDaily) {
+      await StorageService.instance.recordWordleDailyCompleted(won: false);
+      if (!mounted) return;
+
+      final summary = SeriesSummary(
+        rounds: _roundHistory,
+        solvedCount: 0,
+        totalRounds: 1,
+        isDaily: true,
+      );
+
+      SeriesDebriefDialog.show(
+        context: context,
+        summary: summary,
+        emojiGrids: _seriesEmojiGrids,
+        isDaily: true,
+        onNewSeries: () {
+          setState(() {
+            _roundHistory.clear();
+            _seriesEmojiGrids.clear();
+          });
+          _startRound(1);
+        },
+        onExit: () => Navigator.of(context).pop(),
+      );
+    } else {
+      final streak = _roundHistory.where((r) => r.isWon).length;
+      await StorageService.instance.recordWordleSurvivalFinished(
+        streak: streak,
+        rounds: _roundHistory,
+      );
+
+      if (!mounted) return;
+      final summary = SeriesSummary(
+        rounds: _roundHistory,
+        solvedCount: streak,
+        totalRounds: _currentRound,
+        isDaily: false,
+      );
+
+      SeriesDebriefDialog.show(
+        context: context,
+        summary: summary,
+        emojiGrids: _seriesEmojiGrids,
+        isDaily: false,
+        onNewSeries: () {
+          setState(() {
+            _roundHistory.clear();
+            _seriesEmojiGrids.clear();
+          });
+          _startRound(1);
+        },
+        onExit: () => Navigator.of(context).pop(),
+      );
+    }
+  }
+
   Future<bool> _onWillPop() async {
     if (_roundHistory.isEmpty && _guesses.isEmpty) return true;
     if (!mounted) return false;
+
+    final solvedSoFar = _roundHistory.where((r) => r.isWon).length;
 
     final shouldExit = await showDialog<bool>(
       context: context,
@@ -329,8 +467,8 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
           ),
           content: Text(
             widget.isDaily
-                ? 'Your progress in today’s daily wordle will be lost if you exit.'
-                : 'Your current survival streak will end if you exit now.',
+                ? 'Your daily progress will end if you exit now.'
+                : 'Your current survival streak ($solvedSoFar ${solvedSoFar == 1 ? 'word' : 'words'} solved) will be safely saved to your records.',
             style: GoogleFonts.outfit(
               fontSize: 14,
               color: GameColors.terrain,
@@ -344,17 +482,28 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
             ElevatedButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: GameColors.error,
+                backgroundColor: GameColors.carbon,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('EXIT GAME'),
+              child: const Text('SAVE & EXIT'),
             ),
           ],
         );
       },
     );
 
-    return shouldExit ?? false;
+    if (shouldExit == true) {
+      if (!widget.isDaily && _roundHistory.isNotEmpty) {
+        final streak = _roundHistory.where((r) => r.isWon).length;
+        await StorageService.instance.recordWordleSurvivalFinished(
+          streak: streak,
+          rounds: _roundHistory,
+        );
+      }
+      return true;
+    }
+
+    return false;
   }
 
   @override
@@ -439,6 +588,11 @@ class _WordlePlaygroundScreenState extends State<WordlePlaygroundScreen> with Si
           ),
           centerTitle: false,
           actions: [
+            IconButton(
+              icon: const Icon(Icons.flag_outlined, color: GameColors.carbon),
+              tooltip: 'Give Up Round',
+              onPressed: _onGiveUp,
+            ),
             IconButton(
               icon: const Icon(Icons.help_outline_rounded, color: GameColors.carbon),
               tooltip: 'How to Play',

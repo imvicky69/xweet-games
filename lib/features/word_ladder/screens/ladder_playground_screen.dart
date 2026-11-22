@@ -10,6 +10,7 @@ import '../models/ladder_puzzle.dart';
 import '../widgets/ladder_completion_modal.dart';
 import '../widgets/ladder_keyboard.dart';
 import '../widgets/ladder_rules_modal.dart';
+import '../widgets/ladder_solution_modal.dart';
 import '../widgets/ladder_vertical_timeline.dart';
 
 class LadderPlaygroundScreen extends StatefulWidget {
@@ -135,6 +136,154 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
     });
   }
 
+  Future<void> _onGiveUp() async {
+    final state = _controller.state;
+    if (state == null || _controller.isCompleted) return;
+    AudioService.instance.triggerSelectionHaptic();
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: GameColors.surfaceWhite,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: GameColors.carbon, width: 1.2),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.flag_rounded, color: GameColors.carbon, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'Give Up Puzzle?',
+                style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: GameColors.carbon,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Reveal the optimal step-by-step transformation path from ${state.puzzle.startWord.toUpperCase()} to ${state.puzzle.targetWord.toUpperCase()}.',
+            style: GoogleFonts.outfit(
+              fontSize: 13.5,
+              color: GameColors.terrain,
+              height: 1.4,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                'KEEP TRYING',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: GameColors.terrain),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: GameColors.carbon,
+                foregroundColor: GameColors.paper,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: Text(
+                'REVEAL SOLUTION',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 12),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true && mounted) {
+      _showSolutionModal();
+    }
+  }
+
+  void _showSolutionModal() {
+    final state = _controller.state;
+    if (state == null) return;
+
+    LadderSolutionModal.show(
+      context: context,
+      puzzle: state.puzzle,
+      onPlayNext: _playNextPuzzle,
+      onExit: () => Navigator.of(context).pop(),
+    );
+  }
+
+  Widget _buildPinnedTargetHeader(LadderPuzzle puzzle) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: GameColors.surfaceWhite,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: GameColors.carbon, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: GameColors.carbon.withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Text(
+                'TARGET: ',
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: GameColors.terrain,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2.5),
+                decoration: BoxDecoration(
+                  color: GameColors.signalLime,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: GameColors.carbon, width: 1),
+                ),
+                child: Text(
+                  puzzle.targetWord.toUpperCase(),
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: GameColors.carbon,
+                    letterSpacing: 2.0,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: GameColors.paper,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: GameColors.borderMuted),
+            ),
+            child: Text(
+              '${puzzle.optimalMoves} moves optimal',
+              style: GoogleFonts.outfit(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: GameColors.terrain,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _onWillPop() async {
     if (_controller.state == null || _controller.state!.steps.length <= 1) return true;
     if (!mounted) return false;
@@ -164,6 +313,16 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: const Text('STAY'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+                _showSolutionModal();
+              },
+              child: Text(
+                'VIEW SOLUTION',
+                style: GoogleFonts.outfit(fontWeight: FontWeight.w800, color: GameColors.carbon),
+              ),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(dialogContext, true),
@@ -281,6 +440,12 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                     _controller.restart();
                   } : null,
                 ),
+                // Give Up / Reveal Solution
+                IconButton(
+                  icon: const Icon(Icons.flag_outlined, color: GameColors.carbon),
+                  tooltip: 'Give Up & Solution',
+                  onPressed: !state.isCompleted ? _onGiveUp : null,
+                ),
                 // Rules
                 IconButton(
                   icon: const Icon(Icons.help_outline_rounded, color: GameColors.carbon),
@@ -295,7 +460,7 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                 children: [
                   // Toast error banner
                   SizedBox(
-                    height: 28,
+                    height: 24,
                     child: _controller.errorMessage != null
                         ? Center(
                             child: Container(
@@ -316,6 +481,9 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                           )
                         : const SizedBox.shrink(),
                   ),
+
+                  // Pinned Sticky Target Header (stays permanently visible)
+                  _buildPinnedTargetHeader(puzzle),
 
                   // Center Vertical Timeline
                   Expanded(

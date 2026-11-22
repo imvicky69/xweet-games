@@ -37,9 +37,9 @@ class LadderDictionary {
     'busy', 'idle', 'wild', 'tame', 'bold', 'safe', 'neat', 'cool', 'ship', 'boat',
     'sail', 'mast', 'deck', 'dock', 'port', 'yard', 'barn', 'farm', 'corn', 'rice',
     'bean', 'meal', 'soup', 'cake', 'bake', 'cook', 'boil', 'heat', 'melt', 'glow',
-    'beam', 'lamp', 'bulb', 'wire', 'rust', 'dirt', 'soil', 'clay', 'mud', 'seed',
+    'beam', 'lamp', 'bulb', 'wire', 'rust', 'dirt', 'soil', 'clay', 'muck', 'seed',
     'root', 'stem', 'bark', 'pine', 'rose', 'fern', 'moss', 'weed', 'frog', 'toad',
-    'duck', 'swan', 'crow', 'hawk', 'dove', 'owl', 'wolf', 'fox', 'deer', 'hare',
+    'duck', 'swan', 'crow', 'hawk', 'dove', 'fawn', 'wolf', 'foal', 'deer', 'hare',
     'goat', 'bull', 'calf', 'lamb', 'colt', 'mule', 'pony', 'crab', 'seal', 'clam',
     'worm', 'ants', 'wasp', 'moth', 'flea', 'tick', 'silk', 'wool', 'lace', 'yarn',
     'cord', 'rope', 'knot', 'belt', 'boot', 'shoe', 'sock', 'coat', 'vest', 'band',
@@ -79,10 +79,12 @@ class LadderDictionary {
     } catch (_) {
       // Fallback
       for (final w in curatedCommonWords) {
-        _validWords.add(w);
-        for (int i = 0; i < 4; i++) {
-          final p = '${w.substring(0, i)}*${w.substring(i + 1)}';
-          _wildcardMap.putIfAbsent(p, () => []).add(w);
+        if (w.length == 4) {
+          _validWords.add(w);
+          for (int i = 0; i < 4; i++) {
+            final p = '${w.substring(0, i)}*${w.substring(i + 1)}';
+            _wildcardMap.putIfAbsent(p, () => []).add(w);
+          }
         }
       }
       _isLoaded = true;
