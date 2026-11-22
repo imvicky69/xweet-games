@@ -1,0 +1,26 @@
+[
+  {
+    "id": "xweet_web",
+    "badge": "ECOSYSTEM",
+    "title": "Explore Xweet",
+    "description": "More clean apps, games and experiments at xweet.in",
+    "url": "https://xweet.in",
+    "cta": "xweet.in"
+  },
+  {
+    "id": "wallpapers",
+    "badge": "GOODIES",
+    "title": "Minimal Wallpapers",
+    "description": "Get cool minimal wallpapers curated for your devices",
+    "url": "https://xweet.in",
+    "cta": "Get Wallpapers"
+  },
+  {
+    "id": "infyn_browser",
+    "badge": "AD-FREE TOOL",
+    "title": "Infyn Software",
+    "description": "Check out cool ad-free browser tools at infyn.software",
+    "url": "https://infyn.software",
+    "cta": "infyn.software"
+  }
+]

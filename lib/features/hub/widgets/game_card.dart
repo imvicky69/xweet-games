@@ -3,12 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:xweet_games/core/constants/game_colors.dart';
 import 'package:xweet_games/core/services/audio_service.dart';
 import 'package:xweet_games/features/wordle/screens/wordle_detail_screen.dart';
-import 'package:xweet_games/features/wordle/widgets/how_to_play_modal.dart';
 import 'package:xweet_games/features/word_ladder/screens/ladder_lobby_screen.dart';
-import 'package:xweet_games/features/word_ladder/widgets/ladder_rules_modal.dart';
 import 'package:xweet_games/features/tilt/screens/tilt_lobby_screen.dart';
-import 'package:xweet_games/features/tilt/widgets/tilt_rules_modal.dart';
-import 'package:xweet_games/features/tilt/widgets/tilt_preview_widget.dart';
 import 'package:xweet_games/features/tilt/models/tilt_block_style.dart';
 import 'package:xweet_games/models/game_model.dart';
 
@@ -37,174 +33,146 @@ class GameCard extends StatelessWidget {
     }
   }
 
-  void _onHowToPlay(BuildContext context) {
-    AudioService.instance.triggerSelectionHaptic();
-    if (game.id == 'ladder') {
-      LadderRulesModal.show(context);
-    } else if (game.id == 'tilt') {
-      TiltRulesModal.show(context);
-    } else {
-      HowToPlayModal.show(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isLadder = game.id == 'ladder';
     final isTilt = game.id == 'tilt';
 
+    final categoryBadge = isTilt
+        ? 'PHYSICS'
+        : (isLadder ? 'SHIFT' : 'DAILY');
+
+    final playButtonText = isTilt
+        ? 'PLAY TILT.'
+        : (isLadder ? 'PLAY WORD LADDER' : 'PLAY WORDLE');
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      height: 220,
       decoration: BoxDecoration(
         color: GameColors.surfaceWhite,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: GameColors.borderMuted,
-          width: 1,
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: GameColors.carbon.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: GameColors.carbon.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(22),
           onTap: () => _onPlayGame(context),
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Badges
+                // Top Tag Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                       decoration: BoxDecoration(
                         color: isTilt
-                            ? GameColors.signalLime
-                            : (isLadder ? GameColors.mist : GameColors.signalLime),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: GameColors.carbon, width: 1),
+                            ? GameColors.signalLime.withValues(alpha: 0.35)
+                            : (isLadder ? GameColors.mist : GameColors.signalLime.withValues(alpha: 0.35)),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: GameColors.carbon, width: 0.8),
                       ),
                       child: Text(
-                        isTilt
-                            ? 'FORGE2D PHYSICS'
-                            : (isLadder ? 'ONE-LETTER SHIFT' : 'DAILY & SURVIVAL'),
+                        categoryBadge,
                         style: GoogleFonts.outfit(
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.w800,
                           color: GameColors.carbon,
                           letterSpacing: 0.4,
                         ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        Icon(
-                          isTilt
-                              ? Icons.apartment_rounded
-                              : (isLadder ? Icons.swap_vert_rounded : Icons.local_fire_department_rounded),
-                          size: 15,
-                          color: isTilt
-                              ? TiltBlockStyle.mutedForest
-                              : (isLadder ? const Color(0xFF6B4EE6) : Colors.deepOrange),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          isTilt
-                              ? 'PHYSICS ARCADE'
-                              : (isLadder ? 'DAILY PUZZLE' : 'FEATURED'),
-                          style: GoogleFonts.outfit(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: GameColors.carbon,
-                          ),
-                        ),
-                      ],
+                    Icon(
+                      isTilt
+                          ? Icons.apartment_rounded
+                          : (isLadder ? Icons.swap_vert_rounded : Icons.local_fire_department_rounded),
+                      size: 15,
+                      color: isTilt
+                          ? TiltBlockStyle.mutedForest
+                          : (isLadder ? const Color(0xFF6B4EE6) : Colors.deepOrange),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
 
-                // Title & Subtitle
+                const SizedBox(height: 10),
+
+                // Bespoke Game Visual Icon
+                SizedBox(
+                  height: 48,
+                  child: Center(
+                    child: isTilt
+                        ? _buildTiltMiniGraphic()
+                        : (isLadder ? _buildLadderMiniGraphic() : _buildWordleMiniGraphic()),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Title
                 Text(
                   game.title,
                   style: GoogleFonts.outfit(
-                    fontSize: 24,
+                    fontSize: 17,
                     fontWeight: FontWeight.w800,
                     color: GameColors.carbon,
-                    letterSpacing: -0.4,
+                    letterSpacing: -0.3,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
+
+                // Tagline
                 Text(
                   game.tagline,
                   style: GoogleFonts.outfit(
-                    fontSize: 13,
+                    fontSize: 11,
                     color: GameColors.terrain,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 14),
 
-                // Compact, Sleek Visual Preview
-                if (isTilt)
-                  const TiltPreviewWidget(height: 72)
-                else if (isLadder)
-                  _buildLadderPreview()
-                else
-                  _buildWordlePreview(),
+                const Spacer(),
 
-                const SizedBox(height: 16),
-
-                // Action Buttons
-                Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: () => _onHowToPlay(context),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        textStyle: GoogleFonts.outfit(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      child: const Text('HOW TO PLAY'),
+                // Play Button Pill
+                GestureDetector(
+                  onTap: () => _onPlayGame(context),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: GameColors.signalLime,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: GameColors.carbon, width: 1),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _onPlayGame(context),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        icon: Icon(
-                          isTilt
-                              ? Icons.apartment_rounded
-                              : (isLadder ? Icons.swap_vert_rounded : Icons.play_arrow_rounded),
-                          size: 20,
-                        ),
-                        label: Text(
-                          isTilt
-                              ? 'PLAY TILT.'
-                              : (isLadder ? 'PLAY WORD LADDER' : 'PLAY WORDLE'),
-                          style: GoogleFonts.outfit(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
-                          ),
+                    child: Center(
+                      child: Text(
+                        playButtonText,
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: GameColors.carbon,
+                          letterSpacing: 0.4,
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -214,38 +182,37 @@ class GameCard extends StatelessWidget {
     );
   }
 
-  // Wordle 5-Letter Preview Tiles
-  Widget _buildWordlePreview() {
+  // Wordle 4-Letter Mini Tiles
+  Widget _buildWordleMiniGraphic() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         _buildMiniTile('W', GameColors.signalLime, GameColors.carbon),
-        _buildMiniTile('O', GameColors.mist, GameColors.carbon),
-        _buildMiniTile('R', GameColors.carbon, Colors.white),
-        _buildMiniTile('D', GameColors.terrain, Colors.white),
-        _buildMiniTile('L', GameColors.signalLime, GameColors.carbon),
+        _buildMiniTile('O', GameColors.carbon, Colors.white),
+        _buildMiniTile('R', GameColors.mist, GameColors.carbon),
+        _buildMiniTile('D', GameColors.signalLime, GameColors.carbon),
       ],
     );
   }
 
   Widget _buildMiniTile(String letter, Color bg, Color textColor) {
     return Container(
-      width: 36,
-      height: 36,
-      margin: const EdgeInsets.only(right: 6),
+      width: 26,
+      height: 26,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(7),
         border: Border.all(
-          color: GameColors.carbon.withValues(alpha: 0.2),
-          width: 1,
+          color: GameColors.carbon.withValues(alpha: 0.25),
+          width: 0.8,
         ),
       ),
       child: Center(
         child: Text(
           letter,
           style: GoogleFonts.outfit(
-            fontSize: 16,
+            fontSize: 13,
             fontWeight: FontWeight.w800,
             color: textColor,
           ),
@@ -254,57 +221,92 @@ class GameCard extends StatelessWidget {
     );
   }
 
-  // Word Ladder 3-Step Compact Transformation Chips
-  Widget _buildLadderPreview() {
+  // TILT Mini Architectural Floor Graphic
+  Widget _buildTiltMiniGraphic() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 1.2,
+          height: 10,
+          color: GameColors.carbon,
+        ),
+        Container(
+          width: 12,
+          height: 4,
+          decoration: BoxDecoration(
+            color: GameColors.carbon,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(height: 2),
+        Container(
+          width: 68,
+          height: 26,
+          decoration: BoxDecoration(
+            color: const Color(0xFFE2DFD6),
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: GameColors.carbon, width: 1),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildMiniWindow(const Color(0xFFD7F36A)),
+              _buildMiniWindow(Colors.white),
+              _buildMiniWindow(Colors.white),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMiniWindow(Color fill) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      width: 12,
+      height: 14,
       decoration: BoxDecoration(
-        color: GameColors.paper,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: GameColors.borderMuted),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildLadderChip('COLD', changedIdx: -1),
-          const Icon(Icons.arrow_forward_rounded, size: 14, color: GameColors.terrain),
-          _buildLadderChip('CORD', changedIdx: 2),
-          const Icon(Icons.arrow_forward_rounded, size: 14, color: GameColors.terrain),
-          _buildLadderChip('WARM', changedIdx: -1, isTarget: true),
-        ],
+        color: fill,
+        borderRadius: BorderRadius.circular(2),
+        border: Border.all(color: GameColors.carbon.withValues(alpha: 0.3), width: 0.6),
       ),
     );
   }
 
-  Widget _buildLadderChip(String word, {required int changedIdx, bool isTarget = false}) {
+  // Word Ladder Mini Transformation
+  Widget _buildLadderMiniGraphic() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildMiniLadderChip('COLD', false),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: Icon(Icons.arrow_forward_rounded, size: 12, color: GameColors.terrain),
+        ),
+        _buildMiniLadderChip('WARM', true),
+      ],
+    );
+  }
+
+  Widget _buildMiniLadderChip(String word, bool isTarget) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: isTarget ? GameColors.signalLime : GameColors.surfaceWhite,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
           color: isTarget ? GameColors.carbon : GameColors.borderMuted,
-          width: isTarget ? 1.4 : 1.0,
+          width: 1,
         ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(4, (i) {
-          final isChanged = i == changedIdx;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1),
-            child: Text(
-              word[i],
-              style: GoogleFonts.outfit(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: isChanged
-                    ? const Color(0xFF6B4EE6)
-                    : GameColors.carbon,
-              ),
-            ),
-          );
-        }),
+      child: Text(
+        word,
+        style: GoogleFonts.outfit(
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: GameColors.carbon,
+          letterSpacing: 0.3,
+        ),
       ),
     );
   }
