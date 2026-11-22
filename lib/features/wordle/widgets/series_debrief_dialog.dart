@@ -71,12 +71,23 @@ class SeriesDebriefDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Rating Emoji Icon
-            Text(
-              isDaily
-                  ? (isWon ? '🎯' : '🌱')
-                  : summary.rating.emoji,
-              style: const TextStyle(fontSize: 44),
+            // Rating Vector Icon
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: (isDaily ? isWon : summary.solvedCount > 0)
+                    ? GameColors.signalLime
+                    : GameColors.paper,
+                shape: BoxShape.circle,
+                border: Border.all(color: GameColors.carbon, width: 1.4),
+              ),
+              child: Icon(
+                isDaily
+                    ? (isWon ? Icons.military_tech_rounded : Icons.cancel_outlined)
+                    : summary.rating.icon,
+                size: 38,
+                color: GameColors.carbon,
+              ),
             ),
             const SizedBox(height: 8),
 

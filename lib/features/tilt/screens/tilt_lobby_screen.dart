@@ -144,12 +144,11 @@ class _TiltLobbyScreenState extends State<TiltLobbyScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Architectural tower stacking powered by rigid-body physics. Time your release, master pendulum momentum, and counterbalance center-of-mass wobbles.',
+                    'Dynamic Pendulum Momentum & Tower Balance',
                     style: GoogleFonts.outfit(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: GameColors.terrain,
-                      fontWeight: FontWeight.w500,
-                      height: 1.4,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -171,13 +170,13 @@ class _TiltLobbyScreenState extends State<TiltLobbyScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildStatPill('⚡', '$highScore', 'Best Score'),
+                  _buildStatPill(Icons.bolt_rounded, '$highScore', 'Best Score'),
                   Container(width: 1, height: 32, color: GameColors.borderMuted),
-                  _buildStatPill('🏢', '$maxHeight', 'Max Floors'),
+                  _buildStatPill(Icons.apartment_rounded, '$maxHeight', 'Max Floors', iconColor: TiltBlockStyle.mutedForest),
                   Container(width: 1, height: 32, color: GameColors.borderMuted),
-                  _buildStatPill('⭐', '$perfectDrops', 'Perfects'),
+                  _buildStatPill(Icons.verified_rounded, '$perfectDrops', 'Perfects'),
                   Container(width: 1, height: 32, color: GameColors.borderMuted),
-                  _buildStatPill('🎮', '$gamesPlayed', 'Runs'),
+                  _buildStatPill(Icons.sports_esports_rounded, '$gamesPlayed', 'Runs'),
                 ],
               ),
             ),
@@ -242,14 +241,24 @@ class _TiltLobbyScreenState extends State<TiltLobbyScreen> {
                       letterSpacing: -0.3,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Stack floors endlessly with dynamic pendulum acceleration, organic harmonic sway, and real center-of-mass wobbling.',
-                    style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      color: GameColors.terrain,
-                      height: 1.4,
-                    ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.architecture_rounded, size: 14, color: GameColors.terrain),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Continuous Stacking • Pendulum Dynamics • Single Life',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            color: GameColors.terrain,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 18),
                   SizedBox(
@@ -269,13 +278,13 @@ class _TiltLobbyScreenState extends State<TiltLobbyScreen> {
     );
   }
 
-  Widget _buildStatPill(String emoji, String value, String label) {
+  Widget _buildStatPill(IconData icon, String value, String label, {Color? iconColor}) {
     return Column(
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 12)),
+            Icon(icon, size: 15, color: iconColor ?? GameColors.carbon),
             const SizedBox(width: 4),
             Text(
               value,

@@ -107,8 +107,12 @@ class TiltHudOverlay extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('⚡', style: TextStyle(fontSize: 11)),
-                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.bolt_rounded,
+                            size: 14,
+                            color: GameColors.carbon,
+                          ),
+                          const SizedBox(width: 3),
                           Text(
                             '${controller.personalBestScore}',
                             style: GoogleFonts.outfit(

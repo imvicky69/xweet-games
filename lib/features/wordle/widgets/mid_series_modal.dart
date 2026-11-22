@@ -95,7 +95,7 @@ class MidSeriesModal extends StatelessWidget {
           // Subtitle
           Text(
             isWon
-                ? 'Solved in $attemptsUsed of 6 attempts • Streak: $completedRound Words 🔥'
+                ? 'Solved in $attemptsUsed of 6 attempts • Streak: $completedRound Words'
                 : 'All 6 attempts used for this round.',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(

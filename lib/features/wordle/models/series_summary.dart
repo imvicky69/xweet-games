@@ -1,14 +1,17 @@
+import 'package:flutter/material.dart';
 import 'round_record.dart';
 
 class SeriesRating {
   final String title;
   final String badge;
   final String emoji;
+  final IconData icon;
 
   const SeriesRating({
     required this.title,
     required this.badge,
     required this.emoji,
+    required this.icon,
   });
 
   static SeriesRating fromScore(int solvedCount) {
@@ -17,36 +20,42 @@ class SeriesRating {
         title: 'Immortal Lexicographer',
         badge: '10+ Streak Mastery',
         emoji: '👑',
+        icon: Icons.military_tech_rounded,
       );
     } else if (solvedCount >= 7) {
       return const SeriesRating(
         title: 'Grandmaster Wordsmith',
         badge: '7+ Words Survived',
         emoji: '🔥',
+        icon: Icons.local_fire_department_rounded,
       );
     } else if (solvedCount >= 5) {
       return const SeriesRating(
         title: 'Master Cryptic Solver',
         badge: '5+ Words Survived',
         emoji: '🎖️',
+        icon: Icons.workspace_premium_rounded,
       );
     } else if (solvedCount >= 3) {
       return const SeriesRating(
         title: 'Seasoned Wordsmith',
         badge: 'Solid Performance',
         emoji: '📜',
+        icon: Icons.psychology_rounded,
       );
     } else if (solvedCount >= 1) {
       return const SeriesRating(
         title: 'Apprentice Explorer',
         badge: 'Off to a Good Start',
         emoji: '🧭',
+        icon: Icons.explore_rounded,
       );
     } else {
       return const SeriesRating(
         title: 'Field Observer',
         badge: 'Run Ended Early',
         emoji: '🌱',
+        icon: Icons.flag_rounded,
       );
     }
   }

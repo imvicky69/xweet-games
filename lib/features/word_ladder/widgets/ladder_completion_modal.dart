@@ -77,9 +77,21 @@ class LadderCompletionModal extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Trophy Emoji
-            Text(isOptimal ? '🏆' : '🎉', style: const TextStyle(fontSize: 44)),
-            const SizedBox(height: 8),
+            // Performance Vector Icon
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isOptimal ? GameColors.signalLime : GameColors.mist,
+                shape: BoxShape.circle,
+                border: Border.all(color: GameColors.carbon, width: 1.4),
+              ),
+              child: Icon(
+                isOptimal ? Icons.military_tech_rounded : Icons.check_circle_outline_rounded,
+                size: 38,
+                color: GameColors.carbon,
+              ),
+            ),
+            const SizedBox(height: 10),
 
             Text(
               isOptimal ? 'Flawless Solution!' : 'Ladder Completed!',

@@ -181,12 +181,11 @@ class _LadderLobbyScreenState extends State<LadderLobbyScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Transform a starting word into a target word by changing exactly one letter per move. Every word must exist in the dictionary.',
+                    '1-Letter Transformation Puzzle • Graph Solvability',
                     style: GoogleFonts.outfit(
-                      fontSize: 14,
+                      fontSize: 13,
                       color: GameColors.terrain,
-                      fontWeight: FontWeight.w500,
-                      height: 1.4,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -264,14 +263,24 @@ class _LadderLobbyScreenState extends State<LadderLobbyScreen> {
                       letterSpacing: -0.3,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'A new curated puzzle each calendar day, identical for every player worldwide. Compete for streak and optimal move count!',
-                    style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      color: GameColors.terrain,
-                      height: 1.4,
-                    ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.public_rounded, size: 14, color: GameColors.terrain),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Curated Daily • Optimal Move Scoring • Synced',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            color: GameColors.terrain,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 14),
                   if (isDailyDone)
@@ -381,14 +390,24 @@ class _LadderLobbyScreenState extends State<LadderLobbyScreen> {
                       letterSpacing: -0.3,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Endless dynamically generated 4-letter puzzles. Tested for solvability in 3 to 5 optimal moves using on-device graph traversal.',
-                    style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      color: GameColors.terrain,
-                      height: 1.4,
-                    ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.all_inclusive_rounded, size: 14, color: GameColors.terrain),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Infinite Puzzles • 3–5 Optimal Moves • Graph Solved',
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            color: GameColors.terrain,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -436,30 +455,30 @@ class _LadderLobbyScreenState extends State<LadderLobbyScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatPill('🎮', '$played', 'Played'),
+          _buildStatPill(Icons.sports_esports_rounded, '$played', 'Played'),
           Container(width: 1, height: 32, color: GameColors.borderMuted),
-          _buildStatPill('🏆', '$won', 'Solved'),
+          _buildStatPill(Icons.military_tech_rounded, '$won', 'Solved'),
           Container(width: 1, height: 32, color: GameColors.borderMuted),
-          _buildStatPill('🔥', '$streak', 'Streak'),
+          _buildStatPill(Icons.local_fire_department_rounded, '$streak', 'Streak', iconColor: Colors.deepOrange),
           Container(width: 1, height: 32, color: GameColors.borderMuted),
-          _buildStatPill('⚡', '$bestStreak', 'Best'),
+          _buildStatPill(Icons.bolt_rounded, '$bestStreak', 'Best'),
         ],
       ),
     );
   }
 
-  Widget _buildStatPill(String emoji, String value, String label) {
+  Widget _buildStatPill(IconData icon, String value, String label, {Color? iconColor}) {
     return Column(
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 13)),
+            Icon(icon, size: 15, color: iconColor ?? GameColors.carbon),
             const SizedBox(width: 4),
             Text(
               value,
               style: GoogleFonts.outfit(
-                fontSize: 17,
+                fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: GameColors.carbon,
               ),
