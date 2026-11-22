@@ -87,7 +87,7 @@ class XweetAppHeader extends StatelessWidget {
                 onSettingsTap();
               },
               icon: const Icon(
-                Icons.tune_rounded,
+                Icons.settings_outlined,
                 size: 20,
                 color: GameColors.carbon,
               ),

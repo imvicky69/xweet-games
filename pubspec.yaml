@@ -39,6 +39,7 @@ dependencies:
   url_launcher: ^6.3.3
   flame: ^1.38.2
   flame_forge2d: ^0.19.3+7
+  package_info_plus: ^10.2.2
 
 dev_dependencies:
   flutter_test:
