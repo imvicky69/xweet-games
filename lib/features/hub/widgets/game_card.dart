@@ -6,6 +6,10 @@ import 'package:xweet_games/features/wordle/screens/wordle_detail_screen.dart';
 import 'package:xweet_games/features/wordle/widgets/how_to_play_modal.dart';
 import 'package:xweet_games/features/word_ladder/screens/ladder_lobby_screen.dart';
 import 'package:xweet_games/features/word_ladder/widgets/ladder_rules_modal.dart';
+import 'package:xweet_games/features/tilt/screens/tilt_lobby_screen.dart';
+import 'package:xweet_games/features/tilt/widgets/tilt_rules_modal.dart';
+import 'package:xweet_games/features/tilt/widgets/tilt_preview_widget.dart';
+import 'package:xweet_games/features/tilt/models/tilt_block_style.dart';
 import 'package:xweet_games/models/game_model.dart';
 
 class GameCard extends StatelessWidget {
@@ -22,6 +26,10 @@ class GameCard extends StatelessWidget {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const LadderLobbyScreen()),
       );
+    } else if (game.id == 'tilt') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const TiltLobbyScreen()),
+      );
     } else {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const WordleDetailScreen()),
@@ -33,6 +41,8 @@ class GameCard extends StatelessWidget {
     AudioService.instance.triggerSelectionHaptic();
     if (game.id == 'ladder') {
       LadderRulesModal.show(context);
+    } else if (game.id == 'tilt') {
+      TiltRulesModal.show(context);
     } else {
       HowToPlayModal.show(context);
     }
@@ -41,6 +51,7 @@ class GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLadder = game.id == 'ladder';
+    final isTilt = game.id == 'tilt';
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
@@ -76,12 +87,16 @@ class GameCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(
-                        color: isLadder ? GameColors.mist : GameColors.signalLime,
+                        color: isTilt
+                            ? GameColors.signalLime
+                            : (isLadder ? GameColors.mist : GameColors.signalLime),
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(color: GameColors.carbon, width: 1),
                       ),
                       child: Text(
-                        isLadder ? 'ONE-LETTER SHIFT' : 'DAILY & SURVIVAL',
+                        isTilt
+                            ? 'FORGE2D PHYSICS'
+                            : (isLadder ? 'ONE-LETTER SHIFT' : 'DAILY & SURVIVAL'),
                         style: GoogleFonts.outfit(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
@@ -93,13 +108,19 @@ class GameCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          isLadder ? Icons.swap_vert_rounded : Icons.local_fire_department_rounded,
+                          isTilt
+                              ? Icons.apartment_rounded
+                              : (isLadder ? Icons.swap_vert_rounded : Icons.local_fire_department_rounded),
                           size: 15,
-                          color: isLadder ? const Color(0xFF6B4EE6) : Colors.deepOrange,
+                          color: isTilt
+                              ? TiltBlockStyle.mutedForest
+                              : (isLadder ? const Color(0xFF6B4EE6) : Colors.deepOrange),
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          isLadder ? 'DAILY PUZZLE' : 'FEATURED',
+                          isTilt
+                              ? 'PHYSICS ARCADE'
+                              : (isLadder ? 'DAILY PUZZLE' : 'FEATURED'),
                           style: GoogleFonts.outfit(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
@@ -134,7 +155,12 @@ class GameCard extends StatelessWidget {
                 const SizedBox(height: 14),
 
                 // Compact, Sleek Visual Preview
-                if (isLadder) _buildLadderPreview() else _buildWordlePreview(),
+                if (isTilt)
+                  const TiltPreviewWidget(height: 72)
+                else if (isLadder)
+                  _buildLadderPreview()
+                else
+                  _buildWordlePreview(),
 
                 const SizedBox(height: 16),
 
@@ -161,11 +187,15 @@ class GameCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         icon: Icon(
-                          isLadder ? Icons.swap_vert_rounded : Icons.play_arrow_rounded,
+                          isTilt
+                              ? Icons.apartment_rounded
+                              : (isLadder ? Icons.swap_vert_rounded : Icons.play_arrow_rounded),
                           size: 20,
                         ),
                         label: Text(
-                          isLadder ? 'PLAY WORD LADDER' : 'PLAY WORDLE',
+                          isTilt
+                              ? 'PLAY TILT.'
+                              : (isLadder ? 'PLAY WORD LADDER' : 'PLAY WORDLE'),
                           style: GoogleFonts.outfit(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,

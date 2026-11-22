@@ -174,6 +174,33 @@ class StorageService {
     }
   }
 
+  // TILT Architecture Tower Stacking Statistics
+  int get tiltHighScore => _prefs.getInt(AppConstants.keyTiltHighScore) ?? 0;
+  int get tiltMaxHeight => _prefs.getInt(AppConstants.keyTiltMaxHeight) ?? 0;
+  int get tiltGamesPlayed => _prefs.getInt(AppConstants.keyTiltGamesPlayed) ?? 0;
+  int get tiltTotalFloors => _prefs.getInt(AppConstants.keyTiltTotalFloors) ?? 0;
+  int get tiltPerfectDrops => _prefs.getInt(AppConstants.keyTiltPerfectDrops) ?? 0;
+
+  Future<void> recordTiltRun({
+    required int score,
+    required int floors,
+    required int perfectDrops,
+  }) async {
+    final currentHigh = tiltHighScore;
+    if (score > currentHigh) {
+      await _prefs.setInt(AppConstants.keyTiltHighScore, score);
+    }
+
+    final currentMaxHeight = tiltMaxHeight;
+    if (floors > currentMaxHeight) {
+      await _prefs.setInt(AppConstants.keyTiltMaxHeight, floors);
+    }
+
+    await _prefs.setInt(AppConstants.keyTiltGamesPlayed, tiltGamesPlayed + 1);
+    await _prefs.setInt(AppConstants.keyTiltTotalFloors, tiltTotalFloors + floors);
+    await _prefs.setInt(AppConstants.keyTiltPerfectDrops, tiltPerfectDrops + perfectDrops);
+  }
+
   Future<void> resetAllScores() async {
     await _prefs.remove('wordle_series_played');
     await _prefs.remove('wordle_series_won');
@@ -185,6 +212,11 @@ class StorageService {
     await _prefs.remove('ladder_daily_streak');
     await _prefs.remove('ladder_best_streak');
     await _prefs.remove('ladder_last_daily_date');
+    await _prefs.remove(AppConstants.keyTiltHighScore);
+    await _prefs.remove(AppConstants.keyTiltMaxHeight);
+    await _prefs.remove(AppConstants.keyTiltGamesPlayed);
+    await _prefs.remove(AppConstants.keyTiltTotalFloors);
+    await _prefs.remove(AppConstants.keyTiltPerfectDrops);
     final keys = _prefs.getKeys().where((k) => k.startsWith(AppConstants.keyHighScorePrefix));
     for (final key in keys) {
       await _prefs.remove(key);

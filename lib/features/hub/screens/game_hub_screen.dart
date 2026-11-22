@@ -24,6 +24,19 @@ class GameHubScreen extends StatelessWidget {
       isPlayable: true,
     ),
     GameModel(
+      id: 'tilt',
+      title: 'TILT.',
+      tagline: 'Architectural Tower Stacking & Physics',
+      description:
+          'Stack floors from a natural swinging pendulum cable using Forge2D rigid-body dynamics. Align drops, balance center of mass, and build into the clouds!',
+      category: GameCategory.arcade,
+      icon: Icons.apartment_rounded,
+      accentColor: Color(0xFF344D3B),
+      badgeText: 'FORGE2D PHYSICS',
+      statusText: 'EXPEDITION READY',
+      isPlayable: true,
+    ),
+    GameModel(
       id: 'ladder',
       title: 'Word Ladder',
       tagline: '4-Letter Word Transformation Puzzle',

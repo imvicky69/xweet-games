@@ -10,4 +10,11 @@ class AppConstants {
   static const String keyHapticsEnabled = 'setting_haptics_enabled';
   static const String keyPlayerName = 'player_display_name';
   static const String keyHighScorePrefix = 'high_score_';
+
+  // Tilt Storage Keys
+  static const String keyTiltHighScore = 'tilt_high_score';
+  static const String keyTiltMaxHeight = 'tilt_max_height';
+  static const String keyTiltGamesPlayed = 'tilt_games_played';
+  static const String keyTiltTotalFloors = 'tilt_total_floors';
+  static const String keyTiltPerfectDrops = 'tilt_perfect_drops';
 }
