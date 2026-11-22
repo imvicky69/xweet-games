@@ -560,129 +560,255 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
     );
   }
 
+  IconData _getDifficultyIcon(WordleDifficulty diff) {
+    switch (diff) {
+      case WordleDifficulty.progressive:
+        return Icons.trending_up_rounded;
+      case WordleDifficulty.easy:
+        return Icons.sentiment_satisfied_rounded;
+      case WordleDifficulty.medium:
+        return Icons.balance_rounded;
+      case WordleDifficulty.hard:
+        return Icons.psychology_rounded;
+    }
+  }
+
   Widget _buildDifficultySelection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Select Difficulty',
-              style: GoogleFonts.outfit(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: GameColors.carbon,
+    final currentIndex = _selectedDifficulty.index;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: GameColors.paper,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: GameColors.borderMuted),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: Title & Active Badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.tune_rounded, size: 16, color: GameColors.carbon),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Select Difficulty',
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: GameColors.carbon,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Text(
-              _selectedDifficulty.poolSize,
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: GameColors.terrain,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+                decoration: BoxDecoration(
+                  color: GameColors.signalLime,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: GameColors.carbon, width: 0.8),
+                ),
+                child: Text(
+                  _selectedDifficulty.badge,
+                  style: GoogleFonts.outfit(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: GameColors.carbon,
+                    letterSpacing: 0.4,
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ...WordleDifficulty.values.map((diff) {
-          final isSelected = _selectedDifficulty == diff;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 6),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // Active Level Indicator Card
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? Colors.white : GameColors.paper,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isSelected ? GameColors.carbon : GameColors.borderMuted,
-                width: isSelected ? 1.6 : 1.0,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: GameColors.signalLime.withValues(alpha: 0.35),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : null,
+              color: GameColors.surfaceWhite,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: GameColors.borderMuted),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(14),
-                onTap: () => _onDifficultySelected(diff),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Row(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: GameColors.signalLime.withValues(alpha: 0.35),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _getDifficultyIcon(_selectedDifficulty),
+                    size: 16,
+                    color: GameColors.carbon,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Radio dot indicator
-                      Container(
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected ? GameColors.carbon : GameColors.terrain,
-                            width: 1.8,
-                          ),
-                          color: isSelected ? GameColors.signalLime : Colors.transparent,
-                        ),
-                        child: isSelected
-                            ? Center(
-                                child: Container(
-                                  width: 7,
-                                  height: 7,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: GameColors.carbon,
-                                  ),
-                                ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 10),
-
-                      // Title
-                      Expanded(
-                        child: Text(
-                          diff.title,
-                          style: GoogleFonts.outfit(
-                            fontSize: 13,
-                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
-                            color: GameColors.carbon,
-                          ),
+                      Text(
+                        'Hardness Level ${currentIndex + 1} of 4',
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: GameColors.terrain,
                         ),
                       ),
-
-                      // Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: isSelected ? GameColors.signalLime : GameColors.surfaceWhite,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(
-                            color: isSelected ? GameColors.carbon : GameColors.borderMuted,
-                            width: 0.8,
-                          ),
+                      Text(
+                        _selectedDifficulty.subtitle,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: GameColors.carbon,
                         ),
-                        child: Text(
-                          diff.badge,
-                          style: GoogleFonts.outfit(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
-                            color: GameColors.carbon,
-                          ),
-                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-              ),
+                Text(
+                  _selectedDifficulty.poolSize,
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: GameColors.terrain,
+                  ),
+                ),
+              ],
             ),
-          );
-        }),
-      ],
+          ),
+
+          const SizedBox(height: 8),
+
+          // Interactive Hardness Slider
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              trackHeight: 6,
+              activeTrackColor: GameColors.carbon,
+              inactiveTrackColor: GameColors.borderMuted,
+              thumbColor: GameColors.signalLime,
+              overlayColor: GameColors.signalLime.withValues(alpha: 0.25),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+              tickMarkShape: const RoundSliderTickMarkShape(tickMarkRadius: 3.5),
+              activeTickMarkColor: GameColors.signalLime,
+              inactiveTickMarkColor: GameColors.carbon.withValues(alpha: 0.4),
+            ),
+            child: Slider(
+              value: currentIndex.toDouble(),
+              min: 0,
+              max: 3,
+              divisions: 3,
+              onChanged: (val) {
+                _onDifficultySelected(WordleDifficulty.values[val.round()]);
+              },
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          // 2x2 Step Chips (Clickable, syncs with slider)
+          Row(
+            children: [
+              Expanded(child: _buildDifficultyStepChip(WordleDifficulty.progressive)),
+              const SizedBox(width: 8),
+              Expanded(child: _buildDifficultyStepChip(WordleDifficulty.easy)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Expanded(child: _buildDifficultyStepChip(WordleDifficulty.medium)),
+              const SizedBox(width: 8),
+              Expanded(child: _buildDifficultyStepChip(WordleDifficulty.hard)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDifficultyStepChip(WordleDifficulty diff) {
+    final isSelected = _selectedDifficulty == diff;
+    return GestureDetector(
+      onTap: () => _onDifficultySelected(diff),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : GameColors.paper,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? GameColors.carbon : GameColors.borderMuted,
+            width: isSelected ? 1.5 : 1.0,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: GameColors.signalLime.withValues(alpha: 0.35),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              diff.title,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+                color: GameColors.carbon,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  diff.poolSize,
+                  style: GoogleFonts.outfit(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: GameColors.terrain,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: isSelected ? GameColors.signalLime : GameColors.surfaceWhite,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: isSelected ? GameColors.carbon : GameColors.borderMuted,
+                      width: 0.6,
+                    ),
+                  ),
+                  child: Text(
+                    diff.badge,
+                    style: GoogleFonts.outfit(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      color: GameColors.carbon,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
