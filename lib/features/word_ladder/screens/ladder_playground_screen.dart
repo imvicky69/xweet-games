@@ -387,7 +387,7 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
                     decoration: BoxDecoration(
                       color: puzzle.isDaily ? GameColors.signalLime : GameColors.paper,
                       borderRadius: BorderRadius.circular(50),
@@ -396,15 +396,15 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                     child: Text(
                       puzzle.isDaily ? 'DAILY LADDER' : 'FREE SHIFT',
                       style: GoogleFonts.outfit(
-                        fontSize: 11,
+                        fontSize: 10.5,
                         fontWeight: FontWeight.w800,
                         color: GameColors.carbon,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
                     decoration: BoxDecoration(
                       color: GameColors.surfaceWhite,
                       borderRadius: BorderRadius.circular(50),
@@ -413,7 +413,7 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                     child: Text(
                       'Moves: $moveCount',
                       style: GoogleFonts.outfit(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: GameColors.carbon,
                       ),
@@ -424,7 +424,10 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
               actions: [
                 // Undo Button
                 IconButton(
-                  icon: const Icon(Icons.undo_rounded, color: GameColors.carbon),
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(minWidth: 34, maxWidth: 36),
+                  icon: const Icon(Icons.undo_rounded, size: 20, color: GameColors.carbon),
                   tooltip: 'Undo Move',
                   onPressed: state.steps.length > 1 ? () {
                     AudioService.instance.triggerSelectionHaptic();
@@ -433,7 +436,10 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                 ),
                 // Restart Button
                 IconButton(
-                  icon: const Icon(Icons.refresh_rounded, color: GameColors.carbon),
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(minWidth: 34, maxWidth: 36),
+                  icon: const Icon(Icons.refresh_rounded, size: 20, color: GameColors.carbon),
                   tooltip: 'Restart Puzzle',
                   onPressed: state.steps.length > 1 ? () {
                     AudioService.instance.triggerSelectionHaptic();
@@ -442,17 +448,23 @@ class _LadderPlaygroundScreenState extends State<LadderPlaygroundScreen> with Si
                 ),
                 // Give Up / Reveal Solution
                 IconButton(
-                  icon: const Icon(Icons.flag_outlined, color: GameColors.carbon),
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(minWidth: 34, maxWidth: 36),
+                  icon: const Icon(Icons.flag_outlined, size: 20, color: GameColors.carbon),
                   tooltip: 'Give Up & Solution',
                   onPressed: !state.isCompleted ? _onGiveUp : null,
                 ),
                 // Rules
                 IconButton(
-                  icon: const Icon(Icons.help_outline_rounded, color: GameColors.carbon),
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(minWidth: 34, maxWidth: 36),
+                  icon: const Icon(Icons.help_outline_rounded, size: 20, color: GameColors.carbon),
                   tooltip: 'Rules',
                   onPressed: () => LadderRulesModal.show(context),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
               ],
             ),
             body: SafeArea(
