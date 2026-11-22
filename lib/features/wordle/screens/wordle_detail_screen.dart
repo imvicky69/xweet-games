@@ -104,9 +104,10 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
         title: Text(
           'Wordle Expedition',
           style: GoogleFonts.outfit(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.w800,
             color: GameColors.carbon,
+            letterSpacing: -0.2,
           ),
         ),
         actions: [
@@ -114,7 +115,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
             borderRadius: BorderRadius.circular(50),
             onTap: () => _showCareerStatsSheet(context),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
               decoration: BoxDecoration(
                 color: GameColors.surfaceWhite,
                 borderRadius: BorderRadius.circular(50),
@@ -125,14 +126,14 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                 children: [
                   const Icon(
                     Icons.leaderboard_rounded,
-                    size: 14,
+                    size: 13,
                     color: GameColors.carbon,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     'Records',
                     style: GoogleFonts.outfit(
-                      fontSize: 11,
+                      fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                       color: GameColors.carbon,
                     ),
@@ -141,7 +142,7 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Padding(
             padding: const EdgeInsets.only(right: 14),
             child: InkWell(
@@ -151,30 +152,16 @@ class _WordleDetailScreenState extends State<WordleDetailScreen> {
                 HowToPlayModal.show(context);
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: GameColors.surfaceWhite,
-                  borderRadius: BorderRadius.circular(50),
+                  shape: BoxShape.circle,
                   border: Border.all(color: GameColors.borderMuted, width: 1),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.help_outline_rounded,
-                      size: 14,
-                      color: GameColors.carbon,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'How to Play',
-                      style: GoogleFonts.outfit(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: GameColors.carbon,
-                      ),
-                    ),
-                  ],
+                child: const Icon(
+                  Icons.help_outline_rounded,
+                  size: 16,
+                  color: GameColors.carbon,
                 ),
               ),
             ),
