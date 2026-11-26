@@ -42,14 +42,20 @@ class WordRepository {
     return _validGuessSet.contains(word.toUpperCase());
   }
 
-  /// Selects the deterministic daily word for a given [date] (Game of the Day)
+  /// Selects the deterministic daily word for a given [date] (Game of the Day),
+  /// matching the exact algorithm on xweet.in/wordle.
   Future<String> selectDailyWord(DateTime date) async {
     await init();
     if (_allWords.isEmpty) return 'PLANT';
     final poolLimit = min(1500, _allWords.length);
-    final dateSeed = date.year * 10000 + date.month * 100 + date.day;
-    final rng = Random(dateSeed);
-    return _allWords[rng.nextInt(poolLimit)];
+    final utc = date.toUtc();
+    final dateKey =
+        '${utc.year}-${utc.month.toString().padLeft(2, '0')}-${utc.day.toString().padLeft(2, '0')}';
+    int hash = 5381;
+    for (int i = 0; i < dateKey.length; i++) {
+      hash = ((hash * 33) + dateKey.codeUnitAt(i)) & 0xFFFFFFFF;
+    }
+    return _allWords[hash % poolLimit];
   }
 
   /// Selects a target word according to difficulty tier, current round,
